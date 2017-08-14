@@ -1,3 +1,50 @@
-# Contributing
+[![Build][build-badge]][build-url]
+[![Issues][issues-badge]][issues-url]
+[![Gitter][gitter-badge]][gitter-url]
 
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+Device Telemetry
+=================
+
+... project description ...
+
+Overview
+========
+
+... quick demonstrative examples ...
+
+How to use it
+=============
+
+... steps to use this project ...
+... deployment notes ...
+
+[Development, debugging, configuration, etc.](DEVELOPMENT.md)
+
+Configuration
+=============
+
+... how to customize the service, settings, etc. ...
+
+Special notes
+=============
+
+... technical details ...
+
+Edge cases
+==========
+
+... things to take into consideration ...
+... known limitations ...
+
+Other documents
+===============
+
+* [Contributing and Development setup](CONTRIBUTING.md)
+* [Development setup, scripts and tools](DEVELOPMENT.md)
+
+[build-badge]: https://img.shields.io/travis/Azure/device-telemetry-dotnet.svg
+[build-url]: https://travis-ci.org/Azure/device-telemetry-dotnet
+[issues-badge]: https://img.shields.io/github/issues/azure/device-telemetry-dotnet.svg
+[issues-url]: https://github.com/azure/device-telemetry-dotnet/issues
+[gitter-badge]: https://img.shields.io/gitter/room/azure/iot-pcs.js.svg
+[gitter-url]: https://gitter.im/azure/iot-pcs
