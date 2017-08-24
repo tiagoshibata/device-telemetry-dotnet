@@ -20,14 +20,19 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.Runtime
     {
         private const string ApplicationKey = "devicetelemetry:";
         private const string PortKey = ApplicationKey + "webservice_port";
+
         private const string RulesTemplatesFolderKey = ApplicationKey + "rules_templates_folder";
 
-        private const string StorageKey = "documentdb:";
-        private const string StorageConnStringKey = StorageKey + "connstring";
+        private const string StorageTypeKey = ApplicationKey + "storage_type";
 
-        private const string KeyValueStorageKey = "storageadapter:";
-        private const string KeyValueStorageApiUrlKey = KeyValueStorageKey + "webservice_url";
-        private const string KeyValueStorageApiTimeoutKey = KeyValueStorageKey + "webservice_timeout";
+        private const string DocumentDbKey = "documentdb:";
+        private const string DocumentDbConnStringKey = DocumentDbKey + "connstring";
+        private const string DocumentDbDatabaseKey = DocumentDbKey + "database";
+        private const string DocumentDbCollectionKey = DocumentDbKey + "collection";
+
+        private const string StorageAdapterKey = "storageadapter:";
+        private const string StorageAdapterApiUrlKey = StorageAdapterKey + "webservice_url";
+        private const string StorageAdapterApiTimeoutKey = StorageAdapterKey + "webservice_timeout";
 
         /// <summary>Web service listening port</summary>
         public int Port { get; }
@@ -42,9 +47,9 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.Runtime
             this.ServicesConfig = new ServicesConfig
             {
                 RulesTemplatesFolder = MapRelativePath(configData.GetString(RulesTemplatesFolderKey)),
-                StorageConnString = configData.GetString(StorageConnStringKey),
-                KeyValueStorageApiUrl = configData.GetString(KeyValueStorageApiUrlKey),
-                KeyValueStorageApiTimeout = configData.GetInt(KeyValueStorageApiTimeoutKey)
+                DocumentDbConnString = configData.GetString(DocumentDbConnStringKey),
+                StorageAdapterApiUrl = configData.GetString(StorageAdapterApiUrlKey),
+                StorageAdapterApiTimeout = configData.GetInt(StorageAdapterApiTimeoutKey)
             };
         }
 
