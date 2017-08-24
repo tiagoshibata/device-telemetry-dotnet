@@ -1,11 +1,11 @@
-﻿using Microsoft.Azure.Documents;
+﻿// Copyright (c) Microsoft. All rights reserved.
+
+using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Diagnostics;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Exceptions;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Runtime;
 using System;
-using System.Security;
-using System.Text.RegularExpressions;
 
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
 {
@@ -44,7 +44,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
 
                 if (this.client == null)
                 {
-                    this.log.Error("Could not connect to DocumentClient",() => new { this.client });
+                    this.log.Error("Could not connect to DocumentClient",() => new { this.storageUri });
                     throw new InvalidConfigurationException("Could not connect to DocumentClient");
                 }
             }

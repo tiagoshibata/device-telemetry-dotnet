@@ -30,6 +30,14 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.Runtime
         private const string DocumentDbDatabaseKey = DocumentDbKey + "database";
         private const string DocumentDbCollectionKey = DocumentDbKey + "collection";
 
+        private const string MessagesDbKey = "messages:";
+        private const string MessagesDbDatabaseKey = MessagesDbKey + "database";
+        private const string MessagesDbCollectionKey = MessagesDbKey + "collection";
+
+        private const string AlarmsDbKey = "alarms:";
+        private const string AlarmsDbDatabaseKey = MessagesDbKey + "database";
+        private const string AlarmsDbCollectionKey = MessagesDbKey + "collection";
+
         private const string StorageAdapterKey = "storageadapter:";
         private const string StorageAdapterApiUrlKey = StorageAdapterKey + "webservice_url";
         private const string StorageAdapterApiTimeoutKey = StorageAdapterKey + "webservice_timeout";
@@ -46,6 +54,12 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.Runtime
 
             this.ServicesConfig = new ServicesConfig
             {
+                MessagesConfig = new StorageConfig(
+                    configData.GetString(MessagesDbDatabaseKey),
+                    configData.GetString(MessagesDbCollectionKey)),
+                AlarmsConfig = new StorageConfig(
+                    configData.GetString(AlarmsDbDatabaseKey),
+                    configData.GetString(AlarmsDbCollectionKey)),
                 RulesTemplatesFolder = MapRelativePath(configData.GetString(RulesTemplatesFolderKey)),
                 DocumentDbConnString = configData.GetString(DocumentDbConnStringKey),
                 StorageAdapterApiUrl = configData.GetString(StorageAdapterApiUrlKey),

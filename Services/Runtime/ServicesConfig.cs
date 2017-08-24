@@ -9,6 +9,8 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Runtime
 {
     public interface IServicesConfig
     {
+        StorageConfig MessagesConfig { get; set; }
+        StorageConfig AlarmsConfig { get; set; }
         string RulesTemplatesFolder { get; set; }
         string DocumentDbConnString { get; set; }
         Uri DocumentDbUri { get; set; }
@@ -52,16 +54,15 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Runtime
         private string NormalizePath(string path)
         {
             return path
-                       .TrimEnd(Path.DirectorySeparatorChar)
-                       .Replace(
-                           Path.DirectorySeparatorChar + "." + Path.DirectorySeparatorChar,
-                           Path.DirectorySeparatorChar.ToString())
-                   + Path.DirectorySeparatorChar;
+                .TrimEnd(Path.DirectorySeparatorChar)
+                .Replace(
+                    Path.DirectorySeparatorChar + "." + Path.DirectorySeparatorChar,
+                    Path.DirectorySeparatorChar.ToString()) + Path.DirectorySeparatorChar;
         }
 
         private Uri GetDocumentDbUri()
         {
-            var match = Regex.Match(this.DocumentDbConnString, "^AccountEndpoint=(?<endpoint>.*);AccountKey=(?<key>.*);$");
+            var match = Regex.Match(this.DocumentDbConnString, @"^AccountEndpoint=(?<endpoint>.*);AccountKey=(?<key>.*);$");
 
             if (!match.Success)
             {
@@ -73,7 +74,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Runtime
         }
         private string GetDocumentDbKey()
         {
-            var match = Regex.Match(this.DocumentDbConnString, "^AccountEndpoint=(?<endpoint>.*);AccountKey=(?<key>.*);$");
+            var match = Regex.Match(this.DocumentDbConnString, @"^AccountEndpoint=(?<endpoint>.*);AccountKey=(?<key>.*);$");
 
             if (!match.Success)
             {
