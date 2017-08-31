@@ -61,7 +61,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Controllers
             result.Dependencies.Add("Key Value Storage", storageAdapterStatus.Item2);
             result.Dependencies.Add("Storage", documentDbStatus.Item2);
 
-            this.log.Info("Service status request", () => new { Healthy = statusIsOk, statusMsg});
+            this.log.Info("Service status request", () => new { Healthy = statusIsOk, statusMsg });
 
             return result;
         }

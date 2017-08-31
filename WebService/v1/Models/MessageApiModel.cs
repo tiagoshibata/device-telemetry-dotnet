@@ -8,7 +8,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
 {
     public class MessageApiModel
     {
-        private const string DateFormat = "yyyy-MM-dd'T'HH:mm:sszzz";
+        private const string DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:sszzz";
         private DateTimeOffset time;
 
         [JsonProperty(PropertyName = "DeviceId")]
@@ -18,7 +18,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
         public string Time {
             get
             {
-                return this.time.ToString(DateFormat);
+                return this.time.ToString(DATE_FORMAT);
             }
         }
 

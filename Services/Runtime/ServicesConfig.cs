@@ -15,6 +15,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Runtime
         string DocumentDbConnString { get; set; }
         Uri DocumentDbUri { get; set; }
         string DocumentDbKey { get; set; }
+        int DocumentDbThroughput { get; set; }
         string StorageAdapterApiUrl { get; set; }
         int StorageAdapterApiTimeout { get; set; }
     }
@@ -38,6 +39,8 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Runtime
         public StorageConfig MessagesConfig { get; set; }
 
         public StorageConfig AlarmsConfig { get; set; }
+
+        public int DocumentDbThroughput { get; set; }
 
         public Uri DocumentDbUri
         {

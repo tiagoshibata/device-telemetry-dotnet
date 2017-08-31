@@ -7,20 +7,20 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Helpers
 {
     public class QueryBuilder
     {
-        public static String buildSQL(
-            String schemaName,
-            String byId,
-            String byIdPropertyName,
+        public static string buildSQL(
+            string schemaName,
+            string byId,
+            string byIdPropertyName,
             DateTimeOffset? from,
-            String fromProperty,
+            string fromProperty,
             DateTimeOffset? to,
-            String toProperty,
-            String order,
-            String orderProperty,
+            string toProperty,
+            string order,
+            string orderProperty,
             int skip,
             int limit,
-            String[] devices,
-            String devicesProperty)
+            string[] devices,
+            string devicesProperty)
         {
             StringBuilder queryBuilder = new StringBuilder();
             queryBuilder.Append("SELECT TOP " + (skip + limit) + " * FROM c WHERE (c[`doc.schema`] = `" + schemaName + "`");
@@ -54,7 +54,6 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Helpers
             }
             else
             {
-
                 queryBuilder.Append(" ORDER BY c[`" + orderProperty + "`] ASC");
             }
 

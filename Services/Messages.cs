@@ -2,7 +2,6 @@
 
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
-using Microsoft.Azure.Documents.Linq;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Diagnostics;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Helpers;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Runtime;
@@ -16,7 +15,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
 {
     public interface IMessages
     {
-        MessageList GetList(
+        MessageList List(
             DateTimeOffset? from,
             DateTimeOffset? to,
             string order,
@@ -31,8 +30,9 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
 
         private readonly string dataPrefix = "data.";
 
-        private readonly DocumentClient docDbConnection;
-        private readonly string docDbCollectionLink;
+        private readonly DocumentClient documentClient;
+        private readonly string databaseName;
+        private readonly string collectionId;
 
         public Messages(
             IServicesConfig config,
@@ -40,26 +40,24 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             ILogger logger)
         {
             this.storageClient = storageClient;
-            this.docDbConnection = storageClient.getDocumentClient();
-            this.docDbCollectionLink = string.Format(
-                "/dbs/{0}/colls/{1}",
-                config.MessagesConfig.DocumentDbDatabase,
-                config.MessagesConfig.DocumentDbCollection);
+            this.documentClient = storageClient.GetDocumentClient();
+            this.databaseName = config.MessagesConfig.DocumentDbDatabase;
+            this.collectionId = config.MessagesConfig.DocumentDbCollection;
             this.log = logger;
         }
 
-        public MessageList GetList(
+        public MessageList List(
             DateTimeOffset? from,
             DateTimeOffset? to,
-            String order,
+            string order,
             int skip,
             int limit,
-            String[] devices)
+            string[] devices)
         {
 
             int dataPrefixLen = dataPrefix.Length;
 
-            String sql = QueryBuilder.buildSQL(
+            string sql = QueryBuilder.buildSQL(
                 "d2cmessage",
                 null, null,
                 from, "device.msg.received",
@@ -71,7 +69,17 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
 
             this.log.Debug("Created Message Query", () => new { sql });
 
-            List<Document> docs = query(sql, skip);
+            FeedOptions queryOptions = new FeedOptions();
+            queryOptions.EnableCrossPartitionQuery = true;
+            queryOptions.EnableScanInQuery = true;
+
+            List<Document> docs = this.storageClient.QueryDocuments(
+                this.databaseName,
+                this.collectionId,
+                queryOptions,
+                sql,
+                skip,
+                limit);
 
             // Messages to return
             List<Message> messages = new List<Message>();
@@ -107,47 +115,6 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             }
 
             return new MessageList(messages, new List<string>(properties));
-        }
-
-        private List<Document> query(string sql, int skip)
-        {
-            FeedOptions queryOptions = new FeedOptions();
-            queryOptions.EnableCrossPartitionQuery = true;
-            queryOptions.EnableScanInQuery = true;
-
-            List<Document> docs = new List<Document>();
-            String continuationToken = null;
-
-            SqlQuerySpec sqlTest = new SqlQuerySpec(sql);
-
-            do
-            {
-                var query = this.docDbConnection.CreateDocumentQuery<Document>(
-                    this.docDbCollectionLink,
-                    sqlTest,
-                    queryOptions).AsDocumentQuery();
-
-                FeedResponse<Document> queryResults = query.ExecuteNextAsync<Document>().Result;
-
-                foreach (Document doc in queryResults)
-                {
-                    if (skip == 0)
-                    {
-                        docs.Add(doc);
-                    }
-                    else
-                    {
-                        skip--;
-                    }
-                }
-
-                continuationToken = queryResults.ResponseContinuation;
-                queryOptions.RequestContinuation = continuationToken;
-            } while (!String.IsNullOrEmpty(continuationToken));
-
-            this.log.Debug("Message query results count:", () => new { docs.Count });
-
-            return docs;
         }
     }
 }

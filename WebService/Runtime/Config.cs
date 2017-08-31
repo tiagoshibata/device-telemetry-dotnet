@@ -29,14 +29,15 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.Runtime
         private const string DocumentDbConnStringKey = DocumentDbKey + "connstring";
         private const string DocumentDbDatabaseKey = DocumentDbKey + "database";
         private const string DocumentDbCollectionKey = DocumentDbKey + "collection";
+        private const string DocumentDbRUsKey = DocumentDbKey + "RUs";
 
         private const string MessagesDbKey = "messages:";
         private const string MessagesDbDatabaseKey = MessagesDbKey + "database";
         private const string MessagesDbCollectionKey = MessagesDbKey + "collection";
 
         private const string AlarmsDbKey = "alarms:";
-        private const string AlarmsDbDatabaseKey = MessagesDbKey + "database";
-        private const string AlarmsDbCollectionKey = MessagesDbKey + "collection";
+        private const string AlarmsDbDatabaseKey = AlarmsDbKey + "database";
+        private const string AlarmsDbCollectionKey = AlarmsDbKey + "collection";
 
         private const string StorageAdapterKey = "storageadapter:";
         private const string StorageAdapterApiUrlKey = StorageAdapterKey + "webservice_url";
@@ -62,6 +63,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.Runtime
                     configData.GetString(AlarmsDbCollectionKey)),
                 RulesTemplatesFolder = MapRelativePath(configData.GetString(RulesTemplatesFolderKey)),
                 DocumentDbConnString = configData.GetString(DocumentDbConnStringKey),
+                DocumentDbThroughput = configData.GetInt(DocumentDbRUsKey),
                 StorageAdapterApiUrl = configData.GetString(StorageAdapterApiUrlKey),
                 StorageAdapterApiTimeout = configData.GetInt(StorageAdapterApiTimeoutKey)
             };
