@@ -148,11 +148,23 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
         {
             if (this.client == null)
             {
-                this.client = new DocumentClient(
-                    this.storageUri,
-                    this.storagePrimaryKey,
-                    ConnectionPolicy.Default,
-                    ConsistencyLevel.Session);
+                try
+                {
+                    this.client = new DocumentClient(
+                        this.storageUri,
+                        this.storagePrimaryKey,
+                        ConnectionPolicy.Default,
+                        ConsistencyLevel.Session);
+                }
+                catch (Exception e)
+                {
+                    this.log.Error("Could not connect to DocumentClient, " +
+                        "check connection string",
+                        () => new { this.storageUri, e });
+                    throw new InvalidConfigurationException(
+                        "Could not connect to DocumentClient, " +
+                        "check connection string");
+                }
 
                 if (this.client == null)
                 {

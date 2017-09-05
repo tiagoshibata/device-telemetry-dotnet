@@ -9,7 +9,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
 {
     public class AlarmApiModel
     {
-        private const string dateFormat = "yyyy-MM-dd'T'HH:mm:sszzz";
+        private const string DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:sszzz";
         private DateTimeOffset dateCreated;
         private DateTimeOffset dateModified;
 
@@ -24,7 +24,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
         {
             get
             {
-                return this.dateCreated.ToString(dateFormat);
+                return this.dateCreated.ToString(DATE_FORMAT);
             }
         }
 
@@ -33,7 +33,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
         {
             get
             {
-                return this.dateModified.ToString(dateFormat);
+                return this.dateModified.ToString(DATE_FORMAT);
             }
         }
 

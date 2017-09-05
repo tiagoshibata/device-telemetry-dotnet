@@ -65,19 +65,26 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Runtime
 
         private Uri GetDocumentDbUri()
         {
-            var match = Regex.Match(this.DocumentDbConnString, @"^AccountEndpoint=(?<endpoint>.*);AccountKey=(?<key>.*);$");
+            var match = Regex.Match(this.DocumentDbConnString,
+                @"^AccountEndpoint=(?<endpoint>.*);AccountKey=(?<key>.*);$");
 
-            if (!match.Success)
+            Uri endpoint;
+
+            if (!match.Success ||
+                !Uri.TryCreate(match.Groups["endpoint"].Value,
+                    UriKind.RelativeOrAbsolute,
+                    out endpoint))
             {
                 var message = "Invalid connection string for DocumentDB";
                 throw new InvalidConfigurationException(message);
             }
 
-            return new Uri(match.Groups["endpoint"].Value);
+            return endpoint;
         }
         private string GetDocumentDbKey()
         {
-            var match = Regex.Match(this.DocumentDbConnString, @"^AccountEndpoint=(?<endpoint>.*);AccountKey=(?<key>.*);$");
+            var match = Regex.Match(this.DocumentDbConnString,
+                @"^AccountEndpoint=(?<endpoint>.*);AccountKey=(?<key>.*);$");
 
             if (!match.Success)
             {

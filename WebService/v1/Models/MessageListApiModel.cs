@@ -12,7 +12,8 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
         private readonly List<string> properties = new List<string>();
 
         [JsonProperty(PropertyName = "Items")]
-        public List<MessageApiModel> Items {
+        public List<MessageApiModel> Items
+        {
             get { return this.items; }
         }
 
