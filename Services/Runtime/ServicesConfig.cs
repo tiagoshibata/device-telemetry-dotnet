@@ -13,8 +13,8 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Runtime
         StorageConfig AlarmsConfig { get; set; }
         string RulesTemplatesFolder { get; set; }
         string DocumentDbConnString { get; set; }
-        Uri DocumentDbUri { get; set; }
-        string DocumentDbKey { get; set; }
+        Uri DocumentDbUri { get; }
+        string DocumentDbKey { get; }
         int DocumentDbThroughput { get; set; }
         string StorageAdapterApiUrl { get; set; }
         int StorageAdapterApiTimeout { get; set; }
@@ -42,25 +42,17 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Runtime
 
         public int DocumentDbThroughput { get; set; }
 
-        public Uri DocumentDbUri
-        {
-            get { return this.GetDocumentDbUri(); }
-            set { this.DocumentDbUri = this.GetDocumentDbUri(); }
-        }
+        public Uri DocumentDbUri => this.GetDocumentDbUri();
 
-        public string DocumentDbKey
-        {
-            get { return this.GetDocumentDbKey(); }
-            set { this.DocumentDbKey = this.GetDocumentDbKey(); }
-        }
+        public string DocumentDbKey => this.GetDocumentDbKey();
 
         private string NormalizePath(string path)
         {
             return path
-                .TrimEnd(Path.DirectorySeparatorChar)
-                .Replace(
-                    Path.DirectorySeparatorChar + "." + Path.DirectorySeparatorChar,
-                    Path.DirectorySeparatorChar.ToString()) + Path.DirectorySeparatorChar;
+                       .TrimEnd(Path.DirectorySeparatorChar)
+                       .Replace(
+                           Path.DirectorySeparatorChar + "." + Path.DirectorySeparatorChar,
+                           Path.DirectorySeparatorChar.ToString()) + Path.DirectorySeparatorChar;
         }
 
         private Uri GetDocumentDbUri()

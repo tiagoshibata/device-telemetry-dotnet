@@ -51,33 +51,34 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
                     else
                     {
                         AlarmByRuleApiModel alarmByRule;
-                        if (dictionary.TryGetValue(id, out alarmByRule)) { }
-
-                        alarmByRule.Count = alarmByRule.Count++;
-
-                        DateTimeOffset created = alarm.DateCreated;
-
-                        // We only want to update the created date with the latest timestamp
-                        if (DateTimeOffset.Parse(alarmByRule.Created).CompareTo(created) < 0)
+                        if (dictionary.TryGetValue(id, out alarmByRule))
                         {
-                            alarmByRule.Created = created.ToString();
+                            alarmByRule.Count = alarmByRule.Count++;
+
+                            DateTimeOffset created = alarm.DateCreated;
+
+                            // We only want to update the created date with the latest timestamp
+                            if (DateTimeOffset.Parse(alarmByRule.Created).CompareTo(created) < 0)
+                            {
+                                alarmByRule.Created = created.ToString();
+                            }
+
+                            string savedStatus = alarmByRule.Status;
+                            string newStatus = alarm.Status;
+
+                            Status savedStatusCode = (Status) Enum.Parse(typeof(Status), savedStatus);
+                            Status newStatusCode = (Status) Enum.Parse(typeof(Status), newStatus);
+
+                            // The status value that gets set in case of multiple alarms
+                            // with different status follows priority order:
+                            // 1) Open, 2) Acknowledged and 3) Closed
+                            if (savedStatusCode < newStatusCode)
+                            {
+                                alarmByRule.Status = newStatus;
+                            }
+
+                            dictionary[id] = alarmByRule;
                         }
-
-                        string savedStatus = alarmByRule.Status;
-                        string newStatus = alarm.Status;
-
-                        Status savedStatusCode = (Status)Enum.Parse(typeof(Status), savedStatus);
-                        Status newStatusCode = (Status)Enum.Parse(typeof(Status), newStatus);
-
-                        // The status value that gets set in case of multiple alarms
-                        // with different status follows priority order:
-                        // 1) Open, 2) Acknowledged and 3) Closed
-                        if (savedStatusCode < newStatusCode)
-                        {
-                            alarmByRule.Status = newStatus;
-                        }
-
-                        dictionary[id] = alarmByRule;
                     }
                 }
 

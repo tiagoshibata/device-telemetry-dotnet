@@ -11,6 +11,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Helpers
     {
         public static bool IsValid(string pathToTemplate)
         {
+            // TODO: JsonSchema is obsolete - see http://www.newtonsoft.com/jsonschema for more details
             var fileSchema = JsonSchema.Parse(
             @"{
                 'type':'object',
@@ -57,6 +58,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Helpers
 
             foreach (var rule in rulesList)
             {
+                // TODO: IsValid is obsolete - see http://www.newtonsoft.com/jsonschema for more details
                 if (!rule.IsValid(fileSchema)) return false;
             }
 

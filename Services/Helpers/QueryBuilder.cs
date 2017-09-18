@@ -38,11 +38,13 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Helpers
 
             if (from.HasValue)
             {
+                // TODO: left operand is never null
                 DateTimeOffset fromDate = from ?? default(DateTimeOffset);
                 queryBuilder.Append(" AND c[`" + fromProperty + "`] >= " + fromDate.ToUnixTimeMilliseconds());
             }
             if (to.HasValue)
             {
+                // TODO: left operand is never null
                 DateTimeOffset toDate = to ?? default(DateTimeOffset);
                 queryBuilder.Append(" AND c[`" + toProperty + "`] <= " + toDate.ToUnixTimeMilliseconds());
             }
