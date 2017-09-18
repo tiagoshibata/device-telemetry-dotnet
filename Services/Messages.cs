@@ -90,7 +90,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             foreach (Document doc in docs)
             {
                 // Document fields to expose
-                List<KeyValuePair<string, object>> data = new List<KeyValuePair<string, object>>();
+                JObject data = new JObject();
 
                 // Extract all the telemetry data and types
                 var jsonDoc = JObject.Parse(doc.ToString());
@@ -100,8 +100,8 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
                     if (item.Key.StartsWith(DATA_PREFIX))
                     {
                         // Remove the "data." prefix
-                        string key = item.Key.Substring(dataPrefixLen);
-                        data.Add(new KeyValuePair<string, object>(key, item.Value));
+                        string key = item.Key.ToString().Substring(dataPrefixLen);
+                        data.Add(key, item.Value);
 
                         // Telemetry types auto-discovery magic
                         properties.Add(key);

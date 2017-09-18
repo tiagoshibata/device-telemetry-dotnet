@@ -2,6 +2,7 @@
 
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
@@ -18,12 +19,12 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
         public string Time => this.time.ToString(DATE_FORMAT);
 
         [JsonProperty(PropertyName = "Data")]
-        public object Data { get; set; }
+        public JObject Data { get; set; }
 
         public MessageApiModel(
             string deviceId,
             DateTimeOffset time,
-            object data)
+            JObject data)
         {
             this.DeviceId = deviceId;
             this.time = time;
