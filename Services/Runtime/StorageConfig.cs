@@ -14,13 +14,13 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Runtime
             string documentDbCollection)
         {
             this.DocumentDbDatabase = documentDbDatabase;
-            if (this.DocumentDbDatabase == null || this.DocumentDbDatabase.Length == 0)
+            if (string.IsNullOrEmpty(this.DocumentDbDatabase))
             {
                 throw new Exception("DocumentDb database name is empty in configuration");
             }
 
             this.DocumentDbCollection = documentDbCollection;
-            if (this.DocumentDbCollection == null || this.DocumentDbCollection.Length == 0)
+            if (string.IsNullOrEmpty(this.DocumentDbCollection))
             {
                 throw new Exception("DocumentDb collection name is empty in configuration");
             }

@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using Alarm = Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models.Alarm;
+using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models;
+using Newtonsoft.Json;
 
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
 {
@@ -26,14 +26,8 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
         [JsonProperty(PropertyName = "Created")]
         public string Created
         {
-            get
-            {
-                return this.created.ToString(DATE_FORMAT);
-            }
-            set
-            {
-                this.created = DateTimeOffset.Parse(value);
-            }
+            get { return this.created.ToString(DATE_FORMAT); }
+            set { this.created = DateTimeOffset.Parse(value); }
         }
 
         [JsonProperty(PropertyName = "Rule")]
@@ -51,8 +45,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
             this.Rule = rule;
         }
 
-        [JsonProperty(PropertyName = "$metadata", Order = 1000)]
-        public Dictionary<string, string> Metadata;
+        [JsonProperty(PropertyName = "$metadata", Order = 1000)] public Dictionary<string, string> Metadata;
 
         public AlarmByRuleApiModel(
             int count,
@@ -69,10 +62,10 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
                 alarm.RuleDescription);
 
             this.Metadata = new Dictionary<string, string>
-                {
-                    { "$type", $"AlarmByRule;" + Version.Number },
-                    { "$uri", "/" + Version.Path + "/alarmsbyrule/" + this.Rule.Id }
-                };
+            {
+                { "$type", $"AlarmByRule;" + Version.NUMBER },
+                { "$uri", "/" + Version.PATH + "/alarmsbyrule/" + this.Rule.Id }
+            };
         }
     }
 }

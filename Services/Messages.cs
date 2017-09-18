@@ -1,15 +1,14 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
+using System;
+using System.Collections.Generic;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Diagnostics;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Helpers;
+using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Runtime;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using Message = Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models.Message;
-using MessageList = Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models.MessageList;
 
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
 {
@@ -23,6 +22,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             int limit,
             string[] devices);
     }
+
     public class Messages : IMessages
     {
         private const string DATA_PREFIX = "data.";
@@ -54,7 +54,6 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             int limit,
             string[] devices)
         {
-
             int dataPrefixLen = DATA_PREFIX.Length;
 
             string sql = QueryBuilder.buildSQL(

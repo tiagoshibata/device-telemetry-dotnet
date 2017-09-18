@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
-using Microsoft.Azure.Documents;
 using System;
+using Microsoft.Azure.Documents;
 
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models
 {

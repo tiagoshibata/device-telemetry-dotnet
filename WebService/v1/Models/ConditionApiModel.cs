@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
+using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models;
 using Newtonsoft.Json;
-using Condition = Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models.Condition;
 
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
 {

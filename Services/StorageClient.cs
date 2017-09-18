@@ -27,20 +27,21 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             object document);
 
         Task<Document> DeleteDocumentAsync(
-             string databaseName,
-             string colId,
-             string docId);
+            string databaseName,
+            string colId,
+            string docId);
 
         List<Document> QueryDocuments(
-             string databaseName,
-             string colId,
-             FeedOptions queryOptions,
-             string queryString,
-             int skip,
-             int limit);
+            string databaseName,
+            string colId,
+            FeedOptions queryOptions,
+            string queryString,
+            int skip,
+            int limit);
 
         Tuple<bool, string> Ping();
     }
+
     public class StorageClient : IStorageClient
     {
         private readonly ILogger log;
@@ -158,7 +159,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
                 catch (Exception e)
                 {
                     this.log.Error("Could not connect to DocumentClient, " +
-                        "check connection string",
+                                   "check connection string",
                         () => new { this.storageUri, e });
                     throw new InvalidConfigurationException(
                         "Could not connect to DocumentClient, " +
@@ -225,7 +226,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
                     queryString,
                     queryOptions)
                 .AsEnumerable()
-                .Skip(skip )
+                .Skip(skip)
                 .Take(limit);
 
             foreach (Document doc in queryResults)

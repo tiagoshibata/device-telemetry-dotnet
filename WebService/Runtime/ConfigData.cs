@@ -56,7 +56,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.Runtime
             // using the following pattern, e.g. ${VAR_NAME}
             const string pattern = @"\${(?'key'[a-zA-Z_][a-zA-Z0-9_]*)}";
             var keys = (from Match m
-                        in Regex.Matches(value, pattern)
+                            in Regex.Matches(value, pattern)
                         select m.Groups[1].Value).ToArray();
 
             foreach (DictionaryEntry x in Environment.GetEnvironmentVariables())

@@ -1,5 +1,8 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Diagnostics;
@@ -8,13 +11,10 @@ using Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Controllers.Hel
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Exceptions;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Filters;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Controllers
 {
-    [Route(Version.Path + "/[controller]"), TypeFilter(typeof(ExceptionsFilterAttribute))]
+    [Route(Version.PATH + "/[controller]"), TypeFilter(typeof(ExceptionsFilterAttribute))]
     public class AlarmsController : Controller
     {
         private const int LIMIT = 200;

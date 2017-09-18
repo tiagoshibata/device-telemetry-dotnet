@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
+using System.IO;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Exceptions;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
-using System.IO;
 
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Helpers
 {
@@ -13,7 +13,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Helpers
         {
             // TODO: JsonSchema is obsolete - see http://www.newtonsoft.com/jsonschema for more details
             var fileSchema = JsonSchema.Parse(
-            @"{
+                @"{
                 'type':'object',
                 'properties':
                 {
@@ -52,7 +52,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Helpers
 
             JToken json = JToken.Parse(File.ReadAllText(pathToTemplate));
 
-            JArray rulesList = (JArray)json["Rules"];
+            JArray rulesList = (JArray) json["Rules"];
 
             if (rulesList == null) return false;
 

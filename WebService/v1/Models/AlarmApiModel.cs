@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using Alarm = Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models.Alarm;
+using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models;
+using Newtonsoft.Json;
 
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
 {
@@ -20,22 +20,10 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
         public string Id { get; set; }
 
         [JsonProperty(PropertyName = "DateCreated")]
-        public string DateCreated
-        {
-            get
-            {
-                return this.dateCreated.ToString(DATE_FORMAT);
-            }
-        }
+        public string DateCreated => this.dateCreated.ToString(DATE_FORMAT);
 
         [JsonProperty(PropertyName = "DateModified")]
-        public string DateModified
-        {
-            get
-            {
-                return this.dateModified.ToString(DATE_FORMAT);
-            }
-        }
+        public string DateModified => this.dateModified.ToString(DATE_FORMAT);
 
         [JsonProperty(PropertyName = "Description")]
         public string Description { get; set; }
@@ -74,8 +62,8 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
 
                 this.Metadata = new Dictionary<string, string>
                 {
-                    { "$type", $"Alarm;" + Version.Number },
-                    { "$uri", "/" + Version.Path + "/alarms/" + this.Id }
+                    { "$type", $"Alarm;" + Version.NUMBER },
+                    { "$uri", "/" + Version.PATH + "/alarms/" + this.Id }
                 };
             }
         }

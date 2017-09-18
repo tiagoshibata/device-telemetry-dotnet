@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
-using Newtonsoft.Json;
 using System.Collections.Generic;
-using Rule = Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models.Rule;
+using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models;
+using Newtonsoft.Json;
 
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
 {
@@ -19,8 +19,8 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
         [JsonProperty(PropertyName = "$metadata", Order = 1000)]
         public IDictionary<string, string> Metadata => new Dictionary<string, string>
         {
-            { "$type", "RuleList;" + Version.Number },
-            { "$uri", "/" + Version.Path + "/rules" },
+            { "$type", "RuleList;" + Version.NUMBER },
+            { "$uri", "/" + Version.PATH + "/rules" },
         };
 
         public RuleListApiModel(List<Rule> rules)

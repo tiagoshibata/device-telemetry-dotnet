@@ -15,9 +15,6 @@ namespace Services.Test
 {
     public class RulesTest
     {
-        private const int skip = 0;
-        private const int limit = 1000;
-
         private readonly Mock<IStorageAdapterClient> storageAdapter;
         private readonly Mock<ILogger> logger;
         private readonly Mock<IServicesConfig> servicesConfig;

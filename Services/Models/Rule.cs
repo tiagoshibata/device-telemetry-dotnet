@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Exceptions;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models
 {
@@ -85,7 +85,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models
             try
             {
                 JToken jsonRule = json;
-                JArray jsonConditions = (JArray)jsonRule["Conditions"];
+                JArray jsonConditions = (JArray) jsonRule["Conditions"];
 
                 this.Name = jsonRule["Name"].ToString();
                 this.Enabled = jsonRule["Enabled"].ToObject<bool>();
@@ -98,7 +98,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models
                 this.ETag = jsonRule["ETag"]?.ToString() ?? string.Empty;
                 this.Id = jsonRule["Id"]?.ToString() ?? string.Empty;
                 this.DateCreated = jsonRule["DateCreated"]?.ToString() ?? DateTimeOffset.UtcNow.ToString(DATE_FORMAT);
-                this.DateModified = jsonRule["DateModified"]?.ToString() ?? DateTimeOffset.UtcNow.ToString(DATE_FORMAT);                
+                this.DateModified = jsonRule["DateModified"]?.ToString() ?? DateTimeOffset.UtcNow.ToString(DATE_FORMAT);
 
                 List<Condition> conditions = new List<Condition>();
                 foreach (var condition in jsonConditions)

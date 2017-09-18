@@ -1,9 +1,8 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
-using Newtonsoft.Json;
 using System.Collections.Generic;
-using Condition = Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models.Condition;
-using Rule = Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models.Rule;
+using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models;
+using Newtonsoft.Json;
 
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
 {
@@ -67,8 +66,8 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
 
             this.Metadata = new Dictionary<string, string>
             {
-                { "$type", $"Rule;" + Version.Number },
-                { "$uri", "/" + Version.Path + "/rules/" + this.Id }
+                { "$type", $"Rule;" + Version.NUMBER },
+                { "$uri", "/" + Version.PATH + "/rules/" + this.Id }
             };
         }
 
@@ -94,8 +93,8 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
 
                 this.Metadata = new Dictionary<string, string>
                 {
-                    { "$type", $"Rule;" + Version.Number },
-                    { "$uri", "/" + Version.Path + "/rules/" + this.Id }
+                    { "$type", $"Rule;" + Version.NUMBER },
+                    { "$uri", "/" + Version.PATH + "/rules/" + this.Id }
                 };
             }
         }

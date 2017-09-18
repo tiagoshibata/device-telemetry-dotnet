@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
-using Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.Runtime;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.Runtime;
+using Newtonsoft.Json;
 
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
 {
@@ -48,8 +48,8 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
         [JsonProperty(PropertyName = "$metadata", Order = 1000)]
         public Dictionary<string, string> Metadata => new Dictionary<string, string>
         {
-            { "$type", "Status;" + Version.Number },
-            { "$uri", "/" + Version.Path + "/status" }
+            { "$type", "Status;" + Version.NUMBER },
+            { "$uri", "/" + Version.PATH + "/status" }
         };
 
         public StatusApiModel(bool isOk, string msg)

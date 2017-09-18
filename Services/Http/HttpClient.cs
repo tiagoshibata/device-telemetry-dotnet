@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
-using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Diagnostics;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Diagnostics;
 
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Http
 {

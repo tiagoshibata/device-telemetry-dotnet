@@ -57,7 +57,7 @@ namespace WebService.Test.Controllers
             {
                 this.storage.UpsertDocumentAsync(
                     dbName,
-                    collName, 
+                    collName,
                     this.AlarmToDocument(sampleAlarm));
             }
 

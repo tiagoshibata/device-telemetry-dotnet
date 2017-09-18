@@ -13,8 +13,8 @@ namespace Services.Test
 {
     public class MessagesTest
     {
-        private const int skip = 0;
-        private const int limit = 1000;
+        private const int SKIP = 0;
+        private const int LIMIT = 1000;
 
         private readonly Mock<IMessages> messages;
 
@@ -30,7 +30,7 @@ namespace Services.Test
             this.ThereAreNoMessagesInStorage();
 
             // Act
-            var list = this.messages.Object.List(null, null, null, skip, limit, null);
+            var list = this.messages.Object.List(null, null, null, SKIP, LIMIT, null);
 
             // Assert
             Assert.Equal(0, list.Messages.Count);
@@ -44,7 +44,7 @@ namespace Services.Test
             this.ThereAreSomeMessagesInStorage();
 
             // Act
-            var list = this.messages.Object.List(null, null, null, skip, limit, null);
+            var list = this.messages.Object.List(null, null, null, SKIP, LIMIT, null);
 
             // Assert
             Assert.NotEmpty(list.Messages);
@@ -53,7 +53,7 @@ namespace Services.Test
 
         private void ThereAreNoMessagesInStorage()
         {
-            this.messages.Setup(x => x.List(null, null, null, skip, limit, null))
+            this.messages.Setup(x => x.List(null, null, null, SKIP, LIMIT, null))
                 .Returns(new MessageList());
         }
 
@@ -74,7 +74,7 @@ namespace Services.Test
             sampleProperties.Add("data.sample_unit");
             sampleProperties.Add("data.sample_speed");
 
-            this.messages.Setup(x => x.List(null, null, null, skip, limit, null))
+            this.messages.Setup(x => x.List(null, null, null, SKIP, LIMIT, null))
                 .Returns(new MessageList(sampleMessages, sampleProperties));
         }
     }

@@ -10,7 +10,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Controllers
 {
-    [Route(Version.Path + "/[controller]"), TypeFilter(typeof(ExceptionsFilterAttribute))]
+    [Route(Version.PATH + "/[controller]"), TypeFilter(typeof(ExceptionsFilterAttribute))]
     public sealed class RulesController : Controller
     {
         private readonly IRules ruleService;
@@ -38,11 +38,11 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Controllers
             if (limit == null) limit = 1000;
 
             return new RuleListApiModel(
-               await this.ruleService.GetListAsync(
-                   order,
-                   skip.Value,
-                   limit.Value,
-                   groupId));
+                await this.ruleService.GetListAsync(
+                    order,
+                    skip.Value,
+                    limit.Value,
+                    groupId));
         }
 
         [HttpPost]
@@ -56,7 +56,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Controllers
                 await this.ruleService.CreateFromTemplateAsync(template);
                 return null;
             }
-            
+
             // create rule from request body
             Rule newRule = await this.ruleService.CreateAsync(new Rule(body));
 

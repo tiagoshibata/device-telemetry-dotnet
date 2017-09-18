@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Alarm = Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models.Alarm;
+using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models;
+using Newtonsoft.Json;
 
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
 {
@@ -30,8 +30,8 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
         [JsonProperty(PropertyName = "$metadata", Order = 1000)]
         public Dictionary<string, string> Metadata => new Dictionary<string, string>
         {
-            { "$type", $"AlarmByRuleList;" + Version.Number },
-            { "$uri", "/" + Version.Path + "/alarmsbyrule" }
+            { "$type", $"AlarmByRuleList;" + Version.NUMBER },
+            { "$uri", "/" + Version.PATH + "/alarmsbyrule" }
         };
 
         public AlarmByRuleListApiModel(List<Alarm> alarms)

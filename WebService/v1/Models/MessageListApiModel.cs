@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
+using System.Collections.Generic;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models;
 using Newtonsoft.Json;
-using System.Collections.Generic;
 
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
 {
@@ -26,15 +26,15 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
         [JsonProperty(PropertyName = "$metadata", Order = 1000)]
         public IDictionary<string, string> Metadata => new Dictionary<string, string>
         {
-            { "$type", "MessageList;" + Version.Number },
-            { "$uri", "/" + Version.Path + "/messages" },
+            { "$type", "MessageList;" + Version.NUMBER },
+            { "$uri", "/" + Version.PATH + "/messages" },
         };
 
         public MessageListApiModel(MessageList data)
         {
             if (data == null) return;
 
-            foreach (Message  message in data.Messages)
+            foreach (Message message in data.Messages)
             {
                 this.items.Add(new MessageApiModel(message));
             }

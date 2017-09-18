@@ -13,7 +13,7 @@ using Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models;
 
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Controllers
 {
-    [Route(Version.Path + "/[controller]"), TypeFilter(typeof(ExceptionsFilterAttribute))]
+    [Route(Version.PATH + "/[controller]"), TypeFilter(typeof(ExceptionsFilterAttribute))]
     public class AlarmsByRuleController : Controller
     {
         private const int DEVICE_LIMIT = 200;
