@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
-using Newtonsoft.Json;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
-namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models
+namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.StorageAdapter
 {
     public class ValueApiModel
     {

@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
-using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Exceptions;
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
+using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Exceptions;
 
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Runtime
 {
@@ -81,6 +81,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Runtime
 
             return endpoint;
         }
+
         private string GetDocumentDbKey()
         {
             var match = Regex.Match(this.DocumentDbConnString,

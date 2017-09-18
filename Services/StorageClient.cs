@@ -1,16 +1,15 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
-using Microsoft.Azure.Documents.Linq;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Diagnostics;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Exceptions;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Runtime;
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Net;
-using System.Threading.Tasks;
 
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
 {
@@ -25,7 +24,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
         Task<Document> UpsertDocumentAsync(
             string databaseName,
             string colId,
-            Object document);
+            object document);
 
         Task<Document> DeleteDocumentAsync(
              string databaseName,
@@ -58,7 +57,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             this.storagePrimaryKey = config.DocumentDbKey;
             this.storageThroughput = config.DocumentDbThroughput;
             this.log = logger;
-            this.client = GetDocumentClient();
+            this.client = this.GetDocumentClient();
         }
 
         public async Task<ResourceResponse<DocumentCollection>> CreateCollectionIfNotExistsAsync(
@@ -74,7 +73,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             // Azure Cosmos DB collections can be reserved with
             // throughput specified in request units/second.
             RequestOptions requestOptions = new RequestOptions();
-            requestOptions.OfferThroughput = storageThroughput;
+            requestOptions.OfferThroughput = this.storageThroughput;
             string dbUrl = "/dbs/" + databaseName;
             string colUrl = dbUrl + "/colls/" + id;
             bool create = false;
@@ -94,7 +93,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
                 }
                 else
                 {
-                    log.Error("Error reading collection.",
+                    this.log.Error("Error reading collection.",
                         () => new { id, dcx });
                 }
             }
@@ -110,9 +109,9 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
                 }
                 catch (Exception ex)
                 {
-                    log.Error("Error creating collection.",
+                    this.log.Error("Error creating collection.",
                         () => new { id, dbUrl, collectionInfo, ex });
-                    throw ex;
+                    throw;
                 }
             }
 
@@ -124,7 +123,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             string colId,
             string docId)
         {
-            string docUrl = String.Format(
+            string docUrl = string.Format(
                 "/dbs/{0}/colls/{1}/docs/{2}",
                 databaseName,
                 colId,
@@ -140,7 +139,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             {
                 this.log.Error("Error deleting document in collection",
                     () => new { colId, ex });
-                throw ex;
+                throw;
             }
         }
 
@@ -254,8 +253,8 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             }
             catch (Exception ex)
             {
-                log.Error("Error upserting document.", (() => new { colId, ex }));
-                throw ex;
+                this.log.Error("Error upserting document.", (() => new { colId, ex }));
+                throw;
             }
         }
     }

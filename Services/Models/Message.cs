@@ -8,7 +8,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models
     {
         public string DeviceId { get; set; }
         public DateTimeOffset Time { get; set; }
-        public Object Data { get; set; }
+        public object Data { get; set; }
 
         public Message()
         {
@@ -20,7 +20,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models
         public Message(
             string deviceId,
             long time,
-            Object data)
+            object data)
         {
             this.DeviceId = deviceId;
             this.Time = DateTimeOffset.FromUnixTimeMilliseconds(time);

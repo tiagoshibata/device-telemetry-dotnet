@@ -28,7 +28,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Http
 
     public class HttpResponse : IHttpResponse
     {
-        private const int TooManyRequests = 429;
+        private const int TOO_MANY_REQUESTS = 429;
 
         public HttpResponse()
         {
@@ -48,31 +48,31 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Http
         public HttpResponseHeaders Headers { get; internal set; }
         public string Content { get; internal set; }
 
-        public bool IsSuccess => (int)this.StatusCode >= 200 && (int)this.StatusCode <= 299;
-        public bool IsError => (int)this.StatusCode >= 400 || (int)this.StatusCode == 0;
+        public bool IsSuccess => (int) this.StatusCode >= 200 && (int) this.StatusCode <= 299;
+        public bool IsError => (int) this.StatusCode >= 400 || (int) this.StatusCode == 0;
 
         public bool IsIncomplete
         {
             get
             {
-                var c = (int)this.StatusCode;
+                var c = (int) this.StatusCode;
                 return (c >= 100 && c <= 199) || (c >= 300 && c <= 399);
             }
         }
 
-        public bool IsNonRetriableError => IsError && !IsRetriableError;
+        public bool IsNonRetriableError => this.IsError && !this.IsRetriableError;
 
         public bool IsRetriableError => this.StatusCode == HttpStatusCode.NotFound ||
                                         this.StatusCode == HttpStatusCode.RequestTimeout ||
-                                        (int)this.StatusCode == TooManyRequests;
+                                        (int) this.StatusCode == TOO_MANY_REQUESTS;
 
-        public bool IsBadRequest => (int)this.StatusCode == 400;
-        public bool IsUnauthorized => (int)this.StatusCode == 401;
-        public bool IsForbidden => (int)this.StatusCode == 403;
-        public bool IsNotFound => (int)this.StatusCode == 404;
-        public bool IsTimeout => (int)this.StatusCode == 408;
-        public bool IsConflict => (int)this.StatusCode == 409;
-        public bool IsServerError => (int)this.StatusCode >= 500;
-        public bool IsServiceUnavailable => (int)this.StatusCode == 503;
+        public bool IsBadRequest => (int) this.StatusCode == 400;
+        public bool IsUnauthorized => (int) this.StatusCode == 401;
+        public bool IsForbidden => (int) this.StatusCode == 403;
+        public bool IsNotFound => (int) this.StatusCode == 404;
+        public bool IsTimeout => (int) this.StatusCode == 408;
+        public bool IsConflict => (int) this.StatusCode == 409;
+        public bool IsServerError => (int) this.StatusCode >= 500;
+        public bool IsServiceUnavailable => (int) this.StatusCode == 503;
     }
 }

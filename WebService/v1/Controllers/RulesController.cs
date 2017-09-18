@@ -1,30 +1,23 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services;
-using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Diagnostics;
+using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Filters;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models;
 using Newtonsoft.Json.Linq;
-using System.Threading.Tasks;
-using Rule = Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models.Rule;
 
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Controllers
 {
     [Route(Version.Path + "/[controller]"), TypeFilter(typeof(ExceptionsFilterAttribute))]
     public sealed class RulesController : Controller
     {
-        private const int CONFLICT = 409;
-
         private readonly IRules ruleService;
-        private readonly ILogger log;
 
-        public RulesController(
-            IRules ruleService,
-            ILogger logger)
+        public RulesController(IRules ruleService)
         {
             this.ruleService = ruleService;
-            this.log = logger;
         }
 
         [HttpGet("{id}")]
@@ -63,13 +56,11 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Controllers
                 await this.ruleService.CreateFromTemplateAsync(template);
                 return null;
             }
-            else
-            {
-                // create rule from request body
-                Rule newRule = await this.ruleService.CreateAsync(new Rule(body));
+            
+            // create rule from request body
+            Rule newRule = await this.ruleService.CreateAsync(new Rule(body));
 
-                return new RuleApiModel(newRule);
-            }
+            return new RuleApiModel(newRule);
         }
 
         [HttpPut("{id}")]

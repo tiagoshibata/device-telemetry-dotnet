@@ -1,19 +1,17 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
-using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Diagnostics;
-using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Exceptions;
-using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Http;
-using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models;
-using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Runtime;
-using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.StorageAdapter;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Diagnostics;
+using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Exceptions;
+using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Http;
+using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Runtime;
+using Newtonsoft.Json;
 
-namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
+namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.StorageAdapter
 {
     public interface IStorageAdapterClient
     {
@@ -29,7 +27,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
     public class StorageAdapterClient : IStorageAdapterClient
     {
         // TODO: make it configurable, default to false
-        private const bool AllowInsecureSSLServer = true;
+        private const bool ALLOW_INSECURE_SSL_SERVER = true;
 
         private readonly IHttpClient httpClient;
         private readonly ILogger log;
@@ -51,7 +49,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
         {
             try
             {
-                var response = await httpClient.GetAsync(
+                var response = await this.httpClient.GetAsync(
                     this.PrepareRequest($"status"));
 
                 if (response.IsError)
@@ -76,52 +74,52 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
 
         public async Task<ValueListApiModel> GetAllAsync(string collectionId)
         {
-            var response = await httpClient.GetAsync(
+            var response = await this.httpClient.GetAsync(
                 this.PrepareRequest($"collections/{collectionId}/values"));
 
-            ThrowIfError(response, collectionId, "");
+            this.ThrowIfError(response, collectionId, "");
 
             return JsonConvert.DeserializeObject<ValueListApiModel>(response.Content);
         }
 
         public async Task<ValueApiModel> GetAsync(string collectionId, string key)
         {
-            var response = await httpClient.GetAsync(
+            var response = await this.httpClient.GetAsync(
                 this.PrepareRequest($"collections/{collectionId}/values/{key}"));
 
-            ThrowIfError(response, collectionId, key);
+            this.ThrowIfError(response, collectionId, key);
 
             return JsonConvert.DeserializeObject<ValueApiModel>(response.Content);
         }
 
         public async Task<ValueApiModel> CreateAsync(string collectionId, string value)
         {
-            var response = await httpClient.PostAsync(
+            var response = await this.httpClient.PostAsync(
                 this.PrepareRequest($"collections/{collectionId}/values",
                     new ValueApiModel { Data = value }));
 
-            ThrowIfError(response, collectionId, "");
+            this.ThrowIfError(response, collectionId, "");
 
             return JsonConvert.DeserializeObject<ValueApiModel>(response.Content);
         }
 
         public async Task<ValueApiModel> UpdateAsync(string collectionId, string key, string value, string etag)
         {
-            var response = await httpClient.PutAsync(
+            var response = await this.httpClient.PutAsync(
                 this.PrepareRequest($"collections/{collectionId}/values/{key}",
                     new ValueApiModel { Data = value, ETag = etag }));
 
-            ThrowIfError(response, collectionId, key);
+            this.ThrowIfError(response, collectionId, key);
 
             return JsonConvert.DeserializeObject<ValueApiModel>(response.Content);
         }
 
         public async Task DeleteAsync(string collectionId, string key)
         {
-            var response = await httpClient.DeleteAsync(
+            var response = await this.httpClient.DeleteAsync(
                 this.PrepareRequest($"collections/{collectionId}/values/{key}"));
 
-            ThrowIfError(response, collectionId, key);
+            this.ThrowIfError(response, collectionId, key);
         }
 
         private HttpRequest PrepareRequest(string path, ValueApiModel content = null)
@@ -135,7 +133,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             request.Options.Timeout = this.timeout;
             if (this.serviceUri.ToLowerInvariant().StartsWith("https:"))
             {
-                request.Options.AllowInsecureSSLServer = AllowInsecureSSLServer;
+                request.Options.AllowInsecureSSLServer = ALLOW_INSECURE_SSL_SERVER;
             }
 
             if (content != null)

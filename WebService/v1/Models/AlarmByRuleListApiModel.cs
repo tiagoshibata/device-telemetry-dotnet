@@ -22,10 +22,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
         [JsonProperty(PropertyName = "Items")]
         public List<AlarmByRuleApiModel> Items
         {
-            get
-            {
-                return this.items;
-            }
+            get { return this.items; }
 
             private set { }
         }

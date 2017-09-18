@@ -47,18 +47,18 @@ namespace WebService.Test.Controllers
             IServicesConfig servicesConfig = config.ServicesConfig;
             this.log = new Mock<ILogger>();
 
-            this.storage = new StorageClient(servicesConfig, log.Object);
+            this.storage = new StorageClient(servicesConfig, this.log.Object);
             string dbName = servicesConfig.AlarmsConfig.DocumentDbDatabase;
             string collName = servicesConfig.AlarmsConfig.DocumentDbCollection;
-            storage.CreateCollectionIfNotExistsAsync(dbName, collName);
+            this.storage.CreateCollectionIfNotExistsAsync(dbName, collName);
 
-            this.sampleAlarms = getSampleAlarms();
+            this.sampleAlarms = this.getSampleAlarms();
             foreach (Alarm sampleAlarm in this.sampleAlarms)
             {
-                storage.UpsertDocumentAsync(
+                this.storage.UpsertDocumentAsync(
                     dbName,
-                    collName,
-                    AlarmToDocument(sampleAlarm));
+                    collName, 
+                    this.AlarmToDocument(sampleAlarm));
             }
 
             Alarms alarmService = new Alarms(servicesConfig, this.storage, this.log.Object);
@@ -83,16 +83,16 @@ namespace WebService.Test.Controllers
                 Id = Guid.NewGuid().ToString()
             };
 
-            document.SetPropertyValue(docSchemaKey, docSchemaValue);
-            document.SetPropertyValue(docSchemaVersionKey, docSchemaVersionValue);
-            document.SetPropertyValue(createdKey, alarm.DateCreated.ToUnixTimeMilliseconds());
-            document.SetPropertyValue(modifiedKey, alarm.DateModified.ToUnixTimeMilliseconds());
-            document.SetPropertyValue(statusKey, alarm.Status);
-            document.SetPropertyValue(descriptionKey, alarm.Description);
-            document.SetPropertyValue(deviceIdKey, alarm.DeviceId);
-            document.SetPropertyValue(ruleIdKey, alarm.RuleId);
-            document.SetPropertyValue(ruleSeverityKey, alarm.RuleSeverity);
-            document.SetPropertyValue(ruleDescriptionKey, alarm.RuleDescription);
+            document.SetPropertyValue(this.docSchemaKey, this.docSchemaValue);
+            document.SetPropertyValue(this.docSchemaVersionKey, this.docSchemaVersionValue);
+            document.SetPropertyValue(this.createdKey, alarm.DateCreated.ToUnixTimeMilliseconds());
+            document.SetPropertyValue(this.modifiedKey, alarm.DateModified.ToUnixTimeMilliseconds());
+            document.SetPropertyValue(this.statusKey, alarm.Status);
+            document.SetPropertyValue(this.descriptionKey, alarm.Description);
+            document.SetPropertyValue(this.deviceIdKey, alarm.DeviceId);
+            document.SetPropertyValue(this.ruleIdKey, alarm.RuleId);
+            document.SetPropertyValue(this.ruleSeverityKey, alarm.RuleSeverity);
+            document.SetPropertyValue(this.ruleDescriptionKey, alarm.RuleDescription);
 
             // The logic used to generate the alarm (future proofing for ML)
             document.SetPropertyValue("logic", "1Device-1Rule-1Message");

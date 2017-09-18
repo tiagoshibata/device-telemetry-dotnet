@@ -22,12 +22,12 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Helpers
             string[] devices,
             string devicesProperty)
         {
-            StringBuilder queryBuilder = new StringBuilder();
+            var queryBuilder = new StringBuilder();
             queryBuilder.Append("SELECT TOP " + (skip + limit) + " * FROM c WHERE (c[`doc.schema`] = `" + schemaName + "`");
 
             if (devices.Length > 0)
             {
-                String ids = String.Join("`,`", devices);
+                var ids = string.Join("`,`", devices);
                 queryBuilder.Append(" AND c[`" + devicesProperty + "`] IN (`" + ids + "`)");
             }
 

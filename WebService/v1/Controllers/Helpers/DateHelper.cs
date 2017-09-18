@@ -5,16 +5,16 @@ using System.Xml;
 
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Controllers.Helpers
 {
-    public class DateHelper
+    public static class DateHelper
     {
-        public static DateTimeOffset? parseDate(string text)
+        public static DateTimeOffset? ParseDate(string text)
         {
-            if (text == null || text == "") return null;
+            if (string.IsNullOrEmpty(text)) return null;
 
             text = text.Trim();
             string utext = text.ToUpper();
 
-            DateTimeOffset now = DateTimeOffset.UtcNow;
+            var now = DateTimeOffset.UtcNow;
 
             if (utext.Equals("NOW"))
             {

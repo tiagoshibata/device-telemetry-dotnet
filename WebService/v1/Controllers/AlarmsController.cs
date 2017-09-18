@@ -17,10 +17,10 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Controllers
     [Route(Version.Path + "/[controller]"), TypeFilter(typeof(ExceptionsFilterAttribute))]
     public class AlarmsController : Controller
     {
+        private const int LIMIT = 200;
+
         private readonly IAlarms alarmService;
         private readonly ILogger log;
-
-        private const int LIMIT = 200;
 
         public AlarmsController(
             IAlarms alarmService,
@@ -39,22 +39,22 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Controllers
             [FromQuery] int? limit,
             [FromQuery] string devices)
         {
-            DateTimeOffset? fromDate = DateHelper.parseDate(from);
-            DateTimeOffset? toDate = DateHelper.parseDate(to);
+            DateTimeOffset? fromDate = DateHelper.ParseDate(from);
+            DateTimeOffset? toDate = DateHelper.ParseDate(to);
 
             if (order == null) order = "asc";
             if (skip == null) skip = 0;
             if (limit == null) limit = 1000;
 
             string[] deviceIds = new string[0];
-            if (!String.IsNullOrEmpty(devices))
+            if (!string.IsNullOrEmpty(devices))
             {
                 deviceIds = devices.Split(',');
             }
 
             if (deviceIds.Length > LIMIT)
             {
-                log.Warn("The client requested too many devices", () => new { devices.Length });
+                this.log.Warn("The client requested too many devices", () => new { devices.Length });
                 throw new BadRequestException("The number of devices cannot exceed 200");
             }
 
@@ -84,6 +84,5 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Controllers
             Alarm alarm = await this.alarmService.UpdateAsync(id, body.Status);
             return new AlarmApiModel(alarm);
         }
-
     }
 }

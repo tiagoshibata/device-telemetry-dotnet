@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
+using System;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Diagnostics;
@@ -8,8 +9,6 @@ using Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Controllers.Hel
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Exceptions;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Filters;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models;
-using System;
-using System.Threading.Tasks;
 
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Controllers
 {
@@ -36,8 +35,8 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Controllers
             [FromQuery] int? limit,
             [FromQuery] string devices)
         {
-            DateTimeOffset? fromDate = DateHelper.parseDate(from);
-            DateTimeOffset? toDate = DateHelper.parseDate(to);
+            DateTimeOffset? fromDate = DateHelper.ParseDate(from);
+            DateTimeOffset? toDate = DateHelper.ParseDate(to);
 
             if (order == null) order = "asc";
             if (skip == null) skip = 0;
@@ -53,7 +52,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Controllers
             }
             if (deviceIds.Length > 200)
             {
-                log.Warn("The client requested too many devices: {}", () => new { deviceIds.Length });
+                this.log.Warn("The client requested too many devices: {}", () => new { deviceIds.Length });
                 throw new BadRequestException("The number of devices cannot exceed 200");
             }
 

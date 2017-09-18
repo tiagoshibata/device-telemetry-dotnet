@@ -1,16 +1,16 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
-using Microsoft.Azure.Documents;
-using Microsoft.Azure.Documents.Client;
-using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Diagnostics;
-using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Helpers;
-using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Exceptions;
-using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Alarm = Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models.Alarm;
+using Microsoft.Azure.Documents;
+using Microsoft.Azure.Documents.Client;
+using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Diagnostics;
+using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Exceptions;
+using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Helpers;
+using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models;
+using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Runtime;
 
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
 {
@@ -40,13 +40,13 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
 
     public class Alarms : IAlarms
     {
+        private const string INVALID_CHARACTER = @"[^A-Za-z0-9:;.,_\-]";
+
         private readonly ILogger log;
         private readonly IStorageClient storageClient;
 
         private readonly string databaseName;
         private readonly string collectionId;
-
-        private const string INVALID_CHARACTER = @"[^A-Za-z0-9:;.,_\-]";
 
         public Alarms(
             IServicesConfig config,
@@ -166,7 +166,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
                 throw new InvalidInputException("id contains illegal characters.");
             }
 
-            Document document = GetDocumentById(id);
+            Document document = this.GetDocumentById(id);
             document.SetPropertyValue("status", status);
 
             document = await this.storageClient.UpsertDocumentAsync(

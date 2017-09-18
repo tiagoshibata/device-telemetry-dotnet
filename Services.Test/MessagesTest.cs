@@ -1,15 +1,13 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
+using System;
+using System.Collections.Generic;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services;
+using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models;
 using Moq;
 using Newtonsoft.Json.Linq;
 using Services.Test.helpers;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Xunit;
-using Message = Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models.Message;
-using MessageList = Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models.MessageList;
 
 namespace Services.Test
 {
@@ -61,10 +59,10 @@ namespace Services.Test
 
         private void ThereAreSomeMessagesInStorage()
         {
-            List<Message> sampleMessages = new List<Message>();
-            List<string> sampleProperties = new List<string>();
+            var sampleMessages = new List<Message>();
+            var sampleProperties = new List<string>();
 
-            JObject data = new JObject
+            var data = new JObject
             {
                 { "data.sample_unit", "mph" },
                 { "data.sample_speed", "10" }

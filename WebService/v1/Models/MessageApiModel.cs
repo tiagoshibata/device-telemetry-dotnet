@@ -15,20 +15,15 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
         public string DeviceId { get; set; }
 
         [JsonProperty(PropertyName = "Time")]
-        public string Time {
-            get
-            {
-                return this.time.ToString(DATE_FORMAT);
-            }
-        }
+        public string Time => this.time.ToString(DATE_FORMAT);
 
         [JsonProperty(PropertyName = "Data")]
-        public Object Data { get; set; }
+        public object Data { get; set; }
 
         public MessageApiModel(
             string deviceId,
             DateTimeOffset time,
-            Object data)
+            object data)
         {
             this.DeviceId = deviceId;
             this.time = time;

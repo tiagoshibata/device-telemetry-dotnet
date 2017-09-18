@@ -1,15 +1,15 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
-using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services;
-using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Diagnostics;
-using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Runtime;
-using Moq;
-using Services.Test.helpers;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services;
+using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Diagnostics;
+using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models;
+using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Runtime;
+using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.StorageAdapter;
+using Moq;
+using Services.Test.helpers;
 using Xunit;
-using Condition = Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models.Condition;
-using Rule = Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models.Rule;
 
 namespace Services.Test
 {
@@ -65,12 +65,12 @@ namespace Services.Test
 
         private void ThereAreSomeRulesInStorage()
         {
-            List<Condition> sampleConditions = new List<Condition>
+            var sampleConditions = new List<Condition>
             {
                 new Condition("sample_conddition","Equals","1")
             };
 
-            List<Rule> sampleRules = new List<Rule>
+            var sampleRules = new List<Rule>
             {
                 new Rule(
                     "Sample 1",

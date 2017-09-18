@@ -25,10 +25,10 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
     }
     public class Messages : IMessages
     {
+        private const string DATA_PREFIX = "data.";
+
         private readonly ILogger log;
         private readonly IStorageClient storageClient;
-
-        private readonly string dataPrefix = "data.";
 
         private readonly DocumentClient documentClient;
         private readonly string databaseName;
@@ -55,7 +55,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             string[] devices)
         {
 
-            int dataPrefixLen = dataPrefix.Length;
+            int dataPrefixLen = DATA_PREFIX.Length;
 
             string sql = QueryBuilder.buildSQL(
                 "d2cmessage",
@@ -97,10 +97,10 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
                 foreach (var item in jsonDoc)
                 {
                     // Ignore fields that don't start with "data."
-                    if (item.Key.ToString().StartsWith(dataPrefix))
+                    if (item.Key.StartsWith(DATA_PREFIX))
                     {
                         // Remove the "data." prefix
-                        string key = item.Key.ToString().Substring(dataPrefixLen);
+                        string key = item.Key.Substring(dataPrefixLen);
                         data.Add(new KeyValuePair<string, object>(key, item.Value));
 
                         // Telemetry types auto-discovery magic

@@ -1,17 +1,18 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
-using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Diagnostics;
-using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Exceptions;
-using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Helpers;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Rule = Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models.Rule;
+using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Diagnostics;
+using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Exceptions;
+using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Helpers;
+using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models;
+using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.StorageAdapter;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
 {
@@ -36,8 +37,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
 
     public class Rules : IRules
     {
-        private const string StorageCollection = "rules";
-
+        private const string STORAGE_COLLECTION = "rules";
         private const string INVALID_CHARACTER = @"[^A-Za-z0-9:;.,_\-]";
         private const string DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:sszzz";
 
@@ -75,22 +75,22 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
         {
             if (Regex.IsMatch(id, INVALID_CHARACTER))
             {
-                log.Debug("id contains illegal characters.", () => new { id });
+                this.log.Debug("id contains illegal characters.", () => new { id });
                 throw new InvalidInputException("id contains illegal characters.");
             }
 
-            await this.storage.DeleteAsync(StorageCollection, id);
+            await this.storage.DeleteAsync(STORAGE_COLLECTION, id);
         }
 
         public async Task<Rule> GetAsync(string id)
         {
             if (Regex.IsMatch(id, INVALID_CHARACTER))
             {
-                log.Debug("id contains illegal characters.", () => new { id });
+                this.log.Debug("id contains illegal characters.", () => new { id });
                 throw new InvalidInputException("id contains illegal characters.");
             }
 
-            var item = await this.storage.GetAsync(StorageCollection, id);
+            var item = await this.storage.GetAsync(STORAGE_COLLECTION, id);
             var rule = JsonConvert.DeserializeObject<Rule>(item.Data);
 
             rule.ETag = item.ETag;
@@ -105,7 +105,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             int limit,
             string groupId)
         {
-            var data = await this.storage.GetAllAsync(StorageCollection);
+            var data = await this.storage.GetAllAsync(STORAGE_COLLECTION);
             var ruleList = new List<Rule>();
             foreach (var item in data.Items)
             {
@@ -123,7 +123,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
                 }
                 catch (Exception e)
                 {
-                    log.Debug("Could not parse result from Key Value Storage",
+                    this.log.Debug("Could not parse result from Key Value Storage",
                         () => new { e });
                     throw new InvalidDataException(
                         "Could not parse result from Key Value Storage", e);
@@ -157,7 +157,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
         public async Task<Rule> CreateAsync(Rule rule)
         {
             var item = JsonConvert.SerializeObject(rule);
-            var result = await this.storage.CreateAsync(StorageCollection, item);
+            var result = await this.storage.CreateAsync(STORAGE_COLLECTION, item);
 
             Rule newRule = new Rule(JToken.Parse(result.Data));
             newRule.ETag = result.ETag;
@@ -172,7 +172,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
 
             var item = JsonConvert.SerializeObject(rule);
             var result = await this.storage.UpdateAsync(
-                StorageCollection,
+                STORAGE_COLLECTION,
                 rule.Id,
                 item,
                 rule.ETag);
