@@ -65,7 +65,7 @@ IF "%1"=="--in-sandbox" GOTO :RunInSandbox
     :: Start the sandbox and execute the build script
     docker run -it ^
         -e "PCS_STORAGEADAPTER_WEBSERVICE_URL=http://127.0.0.1:9022/v1" ^
-        -e "PCS_DEVICETELEMETRY_DOCUMENTDB_CONNSTRING=%PCS_DEVICETELEMETRY_DOCUMENTDB_CONNSTRING%" ^
+        -e "PCS_TELEMETRY_DOCUMENTDB_CONNSTRING=%PCS_TELEMETRY_DOCUMENTDB_CONNSTRING%" ^
         -v %PCS_CACHE%\sandbox\.config:/root/.config ^
         -v %PCS_CACHE%\sandbox\.dotnet:/root/.dotnet ^
         -v %PCS_CACHE%\sandbox\.nuget:/root/.nuget ^

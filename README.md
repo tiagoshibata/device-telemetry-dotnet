@@ -57,7 +57,7 @@ In Windows you can also set these [in your system][windows-envvars-howto-url].
 
 If using envornemnt variables, this service requires the following environment
 variables to be set:
-   1. `PCS_DEVICETELEMETRY_DOCUMENTDB_CONNSTRING` = {your Azure Document Db connection string}
+   1. `PCS_TELEMETRY_DOCUMENTDB_CONNSTRING` = {your Azure Document Db connection string}
    1. `PCS_STORAGEADAPTER_WEBSERVICE_URL` = http://localhost:9022/v1
 
 ## Running the service with Visual Studio
@@ -74,7 +74,7 @@ variables to be set:
 1. Edit the WebService project properties, and
    define the following required environment variables. In Windows
    you can also set these [in your system][windows-envvars-howto-url].
-   1. `PCS_DEVICETELEMETRY_DOCUMENTDB_CONNSTRING` = {your Azure Document Db connection string}
+   1. `PCS_TELEMETRY_DOCUMENTDB_CONNSTRING` = {your Azure Document Db connection string}
    1. `PCS_STORAGEADAPTER_WEBSERVICE_URL` = http://localhost:9022/v1
 1. In Visual Studio, start the WebService project
 1. Using an HTTP client like [Postman][postman-url],
@@ -84,7 +84,7 @@ variables to be set:
 
 The solution contains the following projects and folders:
 
-* **Code** for the application is in app/com.microsoft.azure.iotsolutions.devicetelemetry/
+* **Code** for the application is in app/com.microsoft.azure.iotsolutions.telemetry/
     * **WebService** - ASP.NET Web API exposing a RESTful API for for managing Ruels,
     Alarms, and Messages
     * **Services** - Library containing common business logic for interacting with

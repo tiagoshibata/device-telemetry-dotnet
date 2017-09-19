@@ -10,8 +10,8 @@
 version: "3"
 
 services:
-  devicetelemetry:
-    image: azureiotpcs/device-telemetry-dotnet:0.0.1
+  telemetry:
+    image: azureiotpcs/telemetry-dotnet:0.0.1
     depends_on:
       - dependencyone
       - dependencytwo
@@ -20,4 +20,4 @@ services:
       - "9004:9004"
     environment:
       - PCS_STORAGEADAPTER_WEBSERVICE_URL=http://localhost:9022/v1
-      - PCS_DEVICETELEMETRY_DOCUMENTDB_CONNSTRING=
+      - PCS_TELEMETRY_DOCUMENTDB_CONNSTRING=

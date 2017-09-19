@@ -18,7 +18,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.Runtime
     /// <summary>Web service configuration</summary>
     public class Config : IConfig
     {
-        private const string APPLICATION_KEY = "devicetelemetry:";
+        private const string APPLICATION_KEY = "telemetry:";
         private const string PORT_KEY = APPLICATION_KEY + "webservice_port";
 
         private const string RULES_TEMPLATES_FOLDER_KEY = APPLICATION_KEY + "rules_templates_folder";
