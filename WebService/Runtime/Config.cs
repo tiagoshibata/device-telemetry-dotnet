@@ -1,18 +1,21 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
 using System;
-using System.IO;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Runtime;
+using Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.Auth;
 
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.Runtime
 {
     public interface IConfig
     {
-        /// <summary>Web service listening port</summary>
+        // Web service listening port
         int Port { get; }
 
-        /// <summary>Service layer configuration</summary>
+        // Service layer configuration
         IServicesConfig ServicesConfig { get; }
+
+        // Client authentication and authorization configuration
+        IClientAuthConfig ClientAuthConfig { get; }
     }
 
     /// <summary>Web service configuration</summary>
@@ -20,15 +23,10 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.Runtime
     {
         private const string APPLICATION_KEY = "telemetry:";
         private const string PORT_KEY = APPLICATION_KEY + "webservice_port";
-
-        private const string RULES_TEMPLATES_FOLDER_KEY = APPLICATION_KEY + "rules_templates_folder";
-
         private const string STORAGE_TYPE_KEY = APPLICATION_KEY + "storage_type";
 
         private const string DOCUMENTDB_KEY = "documentdb:";
         private const string DOCUMENTDB_CONNSTRING_KEY = DOCUMENTDB_KEY + "connstring";
-        private const string DOCUMENTDB_DATABASE_KEY = DOCUMENTDB_KEY + "database";
-        private const string DOCUMENTDB_COLLECTION_KEY = DOCUMENTDB_KEY + "collection";
         private const string DOCUMENTDB_RUS_KEY = DOCUMENTDB_KEY + "RUs";
 
         private const string MESSAGES_DB_KEY = "messages:";
@@ -43,11 +41,20 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.Runtime
         private const string STORAGE_ADAPTER_API_URL_KEY = STORAGE_ADAPTER_KEY + "webservice_url";
         private const string STORAGE_ADAPTER_API_TIMEOUT_KEY = STORAGE_ADAPTER_KEY + "webservice_timeout";
 
-        /// <summary>Web service listening port</summary>
-        public int Port { get; }
+        private const string CLIENT_AUTH_KEY = "ClientAuth:";
+        private const string CORS_WHITELIST_KEY = CLIENT_AUTH_KEY + "cors_whitelist";
+        private const string AUTH_TYPE_KEY = CLIENT_AUTH_KEY + "auth_type";
+        private const string AUTH_REQUIRED_KEY = CLIENT_AUTH_KEY + "auth_required";
 
-        /// <summary>Service layer configuration</summary>
+        private const string JWT_KEY = "ClientAuth:JWT:";
+        private const string JWT_ALGOS_KEY = JWT_KEY + "allowed_algorithms";
+        private const string JWT_ISSUER_KEY = JWT_KEY + "issuer";
+        private const string JWT_AUDIENCE_KEY = JWT_KEY + "audience";
+        private const string JWT_CLOCK_SKEW_KEY = JWT_KEY + "clock_skew_seconds";
+
+        public int Port { get; }
         public IServicesConfig ServicesConfig { get; }
+        public IClientAuthConfig ClientAuthConfig { get; }
 
         public Config(IConfigData configData)
         {
@@ -61,18 +68,28 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.Runtime
                 AlarmsConfig = new StorageConfig(
                     configData.GetString(ALARMS_DB_DATABASE_KEY),
                     configData.GetString(ALARMS_DB_COLLECTION_KEY)),
-                RulesTemplatesFolder = MapRelativePath(configData.GetString(RULES_TEMPLATES_FOLDER_KEY)),
+                StorageType = configData.GetString(STORAGE_TYPE_KEY),
                 DocumentDbConnString = configData.GetString(DOCUMENTDB_CONNSTRING_KEY),
                 DocumentDbThroughput = configData.GetInt(DOCUMENTDB_RUS_KEY),
                 StorageAdapterApiUrl = configData.GetString(STORAGE_ADAPTER_API_URL_KEY),
                 StorageAdapterApiTimeout = configData.GetInt(STORAGE_ADAPTER_API_TIMEOUT_KEY)
             };
-        }
 
-        private static string MapRelativePath(string path)
-        {
-            if (path.StartsWith(".")) return AppContext.BaseDirectory + Path.DirectorySeparatorChar + path;
-            return path;
+            this.ClientAuthConfig = new ClientAuthConfig
+            {
+                // By default CORS is disabled
+                CorsWhitelist = configData.GetString(CORS_WHITELIST_KEY, string.Empty),
+                // By default Auth is required
+                AuthRequired = configData.GetBool(AUTH_REQUIRED_KEY, true),
+                // By default auth type is JWT
+                AuthType = configData.GetString(AUTH_TYPE_KEY, "JWT"),
+                // By default the only trusted algorithms are RS256, RS384, RS512
+                JwtAllowedAlgos = configData.GetString(JWT_ALGOS_KEY, "RS256,RS384,RS512").Split(','),
+                JwtIssuer = configData.GetString(JWT_ISSUER_KEY),
+                JwtAudience = configData.GetString(JWT_AUDIENCE_KEY),
+                // By default the allowed clock skew is 2 minutes
+                JwtClockSkew = TimeSpan.FromSeconds(configData.GetInt(JWT_CLOCK_SKEW_KEY, 120)),
+            };
         }
     }
 }

@@ -5,9 +5,12 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.Auth;
+using Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.Runtime;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using ILogger = Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Diagnostics.ILogger;
 
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService
 {
@@ -33,10 +36,16 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService
         // Configure method below.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
+            // Setup (not enabling yet) CORS
+            services.AddCors();
+
             // Add controllers as services so they'll be resolved.
             services.AddMvc().AddControllersAsServices();
 
             this.ApplicationContainer = DependencyResolution.Setup(services);
+
+            // Print some useful information at bootstrap time
+            this.PrintBootstrapInfo(this.ApplicationContainer);
 
             // Create the IServiceProvider based on the container
             return new AutofacServiceProvider(this.ApplicationContainer);
@@ -48,15 +57,28 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService
             IApplicationBuilder app,
             IHostingEnvironment env,
             ILoggerFactory loggerFactory,
+            ICorsSetup corsSetup,
             IApplicationLifetime appLifetime)
         {
             loggerFactory.AddConsole(this.Configuration.GetSection("Logging"));
+
+            app.UseMiddleware<AuthMiddleware>();
+
+            // Enable CORS - Must be before UseMvc
+            // see: https://docs.microsoft.com/en-us/aspnet/core/security/cors
+            corsSetup.useMiddleware(app);
 
             app.UseMvc();
 
             // If you want to dispose of resources that have been resolved in the
             // application container, register for the "ApplicationStopped" event.
             appLifetime.ApplicationStopped.Register(() => this.ApplicationContainer.Dispose());
+        }
+
+        private void PrintBootstrapInfo(IContainer container)
+        {
+            var log = container.Resolve<ILogger>();
+            log.Info("Web service started", () => new { Uptime.ProcessId });
         }
     }
 }

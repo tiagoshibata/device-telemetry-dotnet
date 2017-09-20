@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Exceptions;
@@ -11,8 +12,9 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.Runtime
 {
     public interface IConfigData
     {
-        string GetString(string key);
-        int GetInt(string key);
+        string GetString(string key, string defaultValue = "");
+        bool GetBool(string key, bool defaultValue = false);
+        int GetInt(string key, int defaultValue = 0);
     }
 
     public class ConfigData : IConfigData
@@ -30,17 +32,30 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.Runtime
             this.configuration = configurationBuilder.Build();
         }
 
-        public string GetString(string key)
+        public string GetString(string key, string defaultValue = "")
         {
-            var value = this.configuration.GetValue<string>(key);
+            var value = this.configuration.GetValue(key, defaultValue);
             return ReplaceEnvironmentVariables(value);
         }
 
-        public int GetInt(string key)
+        public bool GetBool(string key, bool defaultValue = false)
+        {
+            var value = this.GetString(key, defaultValue.ToString()).ToLowerInvariant();
+
+            var knownTrue = new HashSet<string> { "true", "t", "yes", "y", "1", "-1" };
+            var knownFalse = new HashSet<string> { "false", "f", "no", "n", "0" };
+
+            if (knownTrue.Contains(value)) return true;
+            if (knownFalse.Contains(value)) return false;
+
+            return defaultValue;
+        }
+
+        public int GetInt(string key, int defaultValue = 0)
         {
             try
             {
-                return Convert.ToInt32(this.GetString(key));
+                return Convert.ToInt32(this.GetString(key, defaultValue.ToString()));
             }
             catch (Exception e)
             {
