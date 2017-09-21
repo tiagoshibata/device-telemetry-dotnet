@@ -51,8 +51,8 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models
             {
                 this.ETag = doc.ETag;
                 this.Id = doc.Id;
-                this.DateCreated = DateTimeOffset.FromUnixTimeMilliseconds(doc.GetPropertyValue<long>("dateCreated"));
-                this.DateModified = DateTimeOffset.FromUnixTimeMilliseconds(doc.GetPropertyValue<long>("dateModified"));
+                this.DateCreated = DateTimeOffset.FromUnixTimeMilliseconds(doc.GetPropertyValue<long>("created"));
+                this.DateModified = DateTimeOffset.FromUnixTimeMilliseconds(doc.GetPropertyValue<long>("modified"));
                 this.Description = doc.GetPropertyValue<string>("description");
                 this.GroupId = doc.GetPropertyValue<string>("group.id");
                 this.DeviceId = doc.GetPropertyValue<string>("device.id");
