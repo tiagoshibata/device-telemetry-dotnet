@@ -66,7 +66,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService
 
             // Enable CORS - Must be before UseMvc
             // see: https://docs.microsoft.com/en-us/aspnet/core/security/cors
-            corsSetup.useMiddleware(app);
+            corsSetup.UseMiddleware(app);
 
             app.UseMvc();
 

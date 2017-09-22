@@ -42,7 +42,7 @@ namespace WebService.Test.Controllers
 
         public AlarmsByRuleControllerTest()
         {
-            ConfigData configData = new ConfigData();
+            ConfigData configData = new ConfigData(new Logger(Uptime.ProcessId, LogLevel.Info));
             Config config = new Config(configData);
             IServicesConfig servicesConfig = config.ServicesConfig;
             this.log = new Mock<ILogger>();
@@ -65,7 +65,7 @@ namespace WebService.Test.Controllers
             this.controller = new AlarmsByRuleController(alarmService, this.log.Object);
         }
 
-        [Fact, Trait(Constants.Type, Constants.UnitTest)]
+        [Fact, Trait(Constants.TYPE, Constants.UNIT_TEST)]
         public void ProvideAlarmsByRuleResult()
         {
             // Act
@@ -165,7 +165,7 @@ namespace WebService.Test.Controllers
             return list;
         }
 
-        private Alarm getSampleAlarm()
+        private Alarm GetSampleAlarm()
         {
             return new Alarm(
                 "6l1log0f7h2yt6p",

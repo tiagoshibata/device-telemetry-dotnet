@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Diagnostics;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Exceptions;
 using Microsoft.Extensions.Configuration;
 
@@ -20,9 +21,12 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.Runtime
     public class ConfigData : IConfigData
     {
         private readonly IConfigurationRoot configuration;
+        private readonly ILogger log;
 
-        public ConfigData()
+        public ConfigData(ILogger logger)
         {
+            this.log = logger;
+
             // More info about configuration at
             // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration
 
@@ -35,7 +39,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.Runtime
         public string GetString(string key, string defaultValue = "")
         {
             var value = this.configuration.GetValue(key, defaultValue);
-            return ReplaceEnvironmentVariables(value);
+            return this.ReplaceEnvironmentVariables(value);
         }
 
         public bool GetBool(string key, bool defaultValue = false)
@@ -63,23 +67,69 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.Runtime
             }
         }
 
-        private static string ReplaceEnvironmentVariables(string value)
+        private string ReplaceEnvironmentVariables(string value)
         {
-            if (string.IsNullOrEmpty(value)) return value;
+            return string.IsNullOrEmpty(value)
+                ? value
+                : this.ProcessOptionalPlaceholders(this.ProcessMandatoryPlaceholders(value));
+        }
 
-            // Extract the name of all the substitutions required
-            // using the following pattern, e.g. ${VAR_NAME}
-            const string pattern = @"\${(?'key'[a-zA-Z_][a-zA-Z0-9_]*)}";
-            var keys = (from Match m
-                            in Regex.Matches(value, pattern)
-                        select m.Groups[1].Value).ToArray();
+        private string ProcessMandatoryPlaceholders(string value)
+        {
+            // Pattern for mandatory replacements: ${VAR_NAME}
+            const string pattern = @"\${([a-zA-Z_][a-zA-Z0-9_]*)}";
 
+            // Search
+            var keys = (from Match m in Regex.Matches(value, pattern)
+                        select m.Groups[1].Value).Distinct().ToArray();
+
+            // Replace
             foreach (DictionaryEntry x in Environment.GetEnvironmentVariables())
             {
                 if (keys.Contains(x.Key))
                 {
                     value = value.Replace("${" + x.Key + "}", x.Value.ToString());
                 }
+            }
+
+            // Non replaced placeholders cause an exception
+            keys = (from Match m in Regex.Matches(value, pattern)
+                    select m.Groups[1].Value).ToArray();
+            if (keys.Length > 0)
+            {
+                var varsNotFound = keys.Aggregate(", ", (current, k) => current + k);
+                this.log.Error("Environment variables not found", () => new { varsNotFound });
+                throw new InvalidConfigurationException("Environment variables not found: " + varsNotFound);
+            }
+
+            return value;
+        }
+
+        private string ProcessOptionalPlaceholders(string value)
+        {
+            // Pattern for optional replacements: ${?VAR_NAME}
+            const string pattern = @"\${\?([a-zA-Z_][a-zA-Z0-9_]*)}";
+
+            // Search
+            var keys = (from Match m in Regex.Matches(value, pattern)
+                        select m.Groups[1].Value).Distinct().ToArray();
+
+            // Replace
+            foreach (DictionaryEntry x in Environment.GetEnvironmentVariables())
+            {
+                if (keys.Contains(x.Key))
+                {
+                    value = value.Replace("${?" + x.Key + "}", x.Value.ToString());
+                }
+            }
+
+            // Non replaced placeholders cause an exception
+            keys = (from Match m in Regex.Matches(value, pattern)
+                    select m.Groups[1].Value).ToArray();
+            if (keys.Length > 0)
+            {
+                var varsNotFound = keys.Aggregate(", ", (current, k) => current + k);
+                this.log.Warn("Environment variables not found", () => new { varsNotFound });
             }
 
             return value;

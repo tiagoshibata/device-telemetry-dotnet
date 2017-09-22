@@ -45,6 +45,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models
             List<Condition> conditions)
         {
             this.Name = name;
+            this.Enabled = enabled;
             this.Description = description;
             this.GroupId = groupId;
             this.Severity = severity;

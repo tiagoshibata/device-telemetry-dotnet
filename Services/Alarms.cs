@@ -78,7 +78,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             int limit,
             string[] devices)
         {
-            string sql = QueryBuilder.buildSQL(
+            string sql = QueryBuilder.BuildSql(
                 "alarm",
                 null, null,
                 from, "created",
@@ -121,7 +121,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             int limit,
             string[] devices)
         {
-            string sql = QueryBuilder.buildSQL(
+            string sql = QueryBuilder.BuildSql(
                 "alarm",
                 id, "rule.id",
                 from, "created",

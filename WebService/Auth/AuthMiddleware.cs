@@ -130,7 +130,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.Auth
                 this.log.Error("Authorization header not found", () => { });
             }
 
-            if (header.StartsWith(AUTH_HEADER_PREFIX))
+            if (header != null && header.StartsWith(AUTH_HEADER_PREFIX))
             {
                 token = header.Substring(AUTH_HEADER_PREFIX.Length).Trim();
             }

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Diagnostics;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.Runtime;
 
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService
@@ -10,7 +11,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService
     {
         public static void Main(string[] args)
         {
-            IConfig config = new Config(new ConfigData());
+            IConfig config = new Config(new ConfigData(new Logger(Uptime.ProcessId, LogLevel.Info)));
 
             /*
             Kestrel is a cross-platform HTTP server based on libuv, a

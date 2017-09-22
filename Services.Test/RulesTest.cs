@@ -28,7 +28,7 @@ namespace Services.Test
             this.rules = new Mock<IRules>();
         }
 
-        [Fact, Trait(Constants.Type, Constants.UnitTest)]
+        [Fact, Trait(Constants.TYPE, Constants.UNIT_TEST)]
         public async Task InitialListIsEmptyAsync()
         {
             // Arrange
@@ -41,7 +41,7 @@ namespace Services.Test
             Assert.Equal(0, list.Count);
         }
 
-        [Fact, Trait(Constants.Type, Constants.UnitTest)]
+        [Fact, Trait(Constants.TYPE, Constants.UNIT_TEST)]
         public async Task GetListWithValuesAsync()
         {
             // Arrange

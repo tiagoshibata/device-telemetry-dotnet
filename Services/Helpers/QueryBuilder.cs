@@ -7,7 +7,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Helpers
 {
     public class QueryBuilder
     {
-        public static string buildSQL(
+        public static string BuildSql(
             string schemaName,
             string byId,
             string byIdPropertyName,

@@ -23,7 +23,7 @@ namespace Services.Test
             this.messages = new Mock<IMessages>();
         }
 
-        [Fact, Trait(Constants.Type, Constants.UnitTest)]
+        [Fact, Trait(Constants.TYPE, Constants.UNIT_TEST)]
         public void InitialListIsEmpty()
         {
             // Arrange
@@ -37,7 +37,7 @@ namespace Services.Test
             Assert.Equal(0, list.Properties.Count);
         }
 
-        [Fact, Trait(Constants.Type, Constants.UnitTest)]
+        [Fact, Trait(Constants.TYPE, Constants.UNIT_TEST)]
         public void GetListWithValues()
         {
             // Arrange

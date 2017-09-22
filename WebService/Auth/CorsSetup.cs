@@ -11,14 +11,13 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.Auth
 {
     public interface ICorsSetup
     {
-        void useMiddleware(IApplicationBuilder app);
+        void UseMiddleware(IApplicationBuilder app);
     }
 
     public class CorsSetup : ICorsSetup
     {
         private readonly IClientAuthConfig config;
         private readonly ILogger log;
-        private readonly bool enabled;
 
         public CorsSetup(
             IClientAuthConfig config,
@@ -26,14 +25,18 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.Auth
         {
             this.config = config;
             this.log = logger;
-            this.enabled = !string.IsNullOrEmpty(this.config.CorsWhitelist.Trim());
         }
 
-        public void useMiddleware(IApplicationBuilder app)
+        public void UseMiddleware(IApplicationBuilder app)
         {
-            if (this.enabled)
+            if (this.config.CorsEnabled)
             {
+                this.log.Warn("CORS is enabled", () => { });
                 app.UseCors(this.BuildCorsPolicy);
+            }
+            else
+            {
+                this.log.Info("CORS is disabled", () => { });
             }
         }
 
