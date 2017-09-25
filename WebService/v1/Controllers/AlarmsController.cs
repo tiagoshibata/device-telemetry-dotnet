@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.Documents.SystemFunctions;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Diagnostics;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Exceptions;
@@ -10,9 +12,6 @@ using Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Controllers.Hel
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Exceptions;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Filters;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Controllers
 {
@@ -20,12 +19,6 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Controllers
     public class AlarmsController : Controller
     {
         private const int LIMIT = 200;
-        private enum Status
-        {
-            closed,
-            acknowledged,
-            open
-        }
 
         private readonly IAlarms alarmService;
         private readonly ILogger log;
@@ -89,15 +82,17 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Controllers
             [FromRoute] string id,
             [FromBody] AlarmStatusApiModel body)
         {
-            var status = (Status)Enum.Parse(typeof(Status), body.Status);
-            if (status.IsNull())
+            // validate input
+            if (!(body.Status.Equals("open", StringComparison.OrdinalIgnoreCase) ||
+                  body.Status.Equals("closed", StringComparison.OrdinalIgnoreCase) ||
+                  body.Status.Equals("acknowledged", StringComparison.OrdinalIgnoreCase)))
             {
                 throw new InvalidInputException(
                     "Status must be `closed`, `open`, or `acknowledged`." +
                     " Value provided:" + body.Status);
             }
 
-            Alarm alarm = await this.alarmService.UpdateAsync(id, body.Status);
+            Alarm alarm = await this.alarmService.UpdateAsync(id, body.Status.ToLowerInvariant());
             return new AlarmApiModel(alarm);
         }
     }
