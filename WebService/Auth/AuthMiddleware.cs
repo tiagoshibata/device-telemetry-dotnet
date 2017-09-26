@@ -38,7 +38,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.Auth
         private const string AUTH_HEADER = "Authorization";
 
         // User requests are marked with this header by the reverse proxy
-        // TODO ~devis: this is a temporary solution for public previe only
+        // TODO ~devis: this is a temporary solution for public preview only
         // TODO ~devis: remove this approach and use the service to service authentication
         // https://github.com/Azure/pcs-auth-dotnet/issues/18
         // https://github.com/Azure/azure-iot-pcs-remote-monitoring-dotnet/issues/11
@@ -73,6 +73,37 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.Auth
                 this.log.Warn("### AUTHENTICATION IS DISABLED! ###", () => { });
                 this.log.Warn("### AUTHENTICATION IS DISABLED! ###", () => { });
             }
+            else
+            {
+                this.log.Info("Auth config", () => new
+                {
+                    this.config.AuthType,
+                    this.config.JwtIssuer,
+                    this.config.JwtAudience,
+                    this.config.JwtAllowedAlgos,
+                    this.config.JwtClockSkew
+                });
+
+                this.tokenValidationParams = new TokenValidationParameters
+                {
+                    // Validate the token signature
+                    RequireSignedTokens = true,
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKeys = this.GetSigningKeys(),
+
+                    // Validate the token issuer
+                    ValidateIssuer = true,
+                    ValidIssuer = this.config.JwtIssuer,
+
+                    // Validate the token audience
+                    ValidateAudience = true,
+                    ValidAudience = this.config.JwtAudience,
+
+                    // Validate token lifetime
+                    ValidateLifetime = true,
+                    ClockSkew = this.config.JwtClockSkew
+                };
+            }
 
             // TODO ~devis: this is a temporary solution for public preview only
             // TODO ~devis: remove this approach and use the service to service authentication
@@ -81,26 +112,6 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.Auth
             this.log.Warn("### Service to service authentication is not available in public preview ###", () => { });
             this.log.Warn("### Service to service authentication is not available in public preview ###", () => { });
             this.log.Warn("### Service to service authentication is not available in public preview ###", () => { });
-
-            this.tokenValidationParams = new TokenValidationParameters
-            {
-                // Validate the token signature
-                RequireSignedTokens = true,
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKeys = this.GetSigningKeys(),
-
-                // Validate the token issuer
-                ValidateIssuer = true,
-                ValidIssuer = this.config.JwtIssuer,
-
-                // Validate the token audience
-                ValidateAudience = true,
-                ValidAudience = this.config.JwtAudience,
-
-                // Validate token lifetime
-                ValidateLifetime = true,
-                ClockSkew = this.config.JwtClockSkew
-            };
         }
 
         public Task Invoke(HttpContext context)
@@ -118,6 +129,13 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.Auth
 
                 // Call the next delegate/middleware in the pipeline
                 this.log.Debug("Skipping auth for service to service request", () => { });
+                return this.requestDelegate(context);
+            }
+
+            if (!this.authRequired)
+            {
+                // Call the next delegate/middleware in the pipeline
+                this.log.Debug("Skipping auth (auth disabled)", () => { });
                 return this.requestDelegate(context);
             }
 

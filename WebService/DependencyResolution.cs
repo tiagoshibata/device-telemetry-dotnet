@@ -31,7 +31,12 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService
             return container;
         }
 
-        /// <summary>Autowire interfaces to classes from all the assemblies</summary>
+        /// <summary>
+        /// Autowire interfaces to classes from all the assemblies, to avoid
+        /// manual configuration. Note that autowiring works only for interfaces
+        /// with just one implementation.
+        /// @see http://autofac.readthedocs.io/en/latest/register/scanning.html
+        /// </summary>
         private static void AutowireAssemblies(ContainerBuilder builder)
         {
             var assembly = Assembly.GetEntryAssembly();
@@ -58,14 +63,13 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService
             var logger = new Logger(Uptime.ProcessId, LogLevel.Debug);
             builder.RegisterInstance(logger).As<ILogger>().SingleInstance();
 
+            // Auth and CORS setup
+            Auth.Startup.SetupDependencies(builder, config);
+
             // By default Autofac uses a request lifetime, creating new objects
             // for each request, which is good to reduce the risk of memory
             // leaks, but not so good for the overall performance.
-            //builder.RegisterType<Services.Devices>().As<IDevices>().SingleInstance();
-            //builder.RegisterType<DeviceTwins>().As<IDeviceTwins>().SingleInstance();
-
-            // Auth and CORS setup
-            Auth.Startup.SetupDependencies(builder, config);
+            //builder.RegisterType<CLASS_NAME>().As<INTERFACE_NAME>().SingleInstance();
         }
 
         private static void RegisterFactory(IContainer container)

@@ -16,7 +16,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.Auth
             builder.RegisterType<CorsSetup>().As<ICorsSetup>().SingleInstance();
 
             // OpenId Connect manager
-            builder.RegisterInstance(Startup.GetOpenIdConnectManager(config))
+            builder.RegisterInstance(GetOpenIdConnectManager(config))
                 .As<IConfigurationManager<OpenIdConnectConfiguration>>().SingleInstance();
         }
 
@@ -25,6 +25,14 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.Auth
         // See: https://openid.net/specs/openid-connect-discovery-1_0.html#rfc.section.4
         private static IConfigurationManager<OpenIdConnectConfiguration> GetOpenIdConnectManager(IConfig config)
         {
+            // Avoid starting the real OpenId Connect manager if not needed, which would
+            // start throwing errors when attempting to fetch certificates.
+            if (!config.ClientAuthConfig.AuthRequired)
+            {
+                return new StaticConfigurationManager<OpenIdConnectConfiguration>(
+                    new OpenIdConnectConfiguration());
+            }
+
             return new ConfigurationManager<OpenIdConnectConfiguration>(
                 config.ClientAuthConfig.JwtIssuer + ".well-known/openid-configuration",
                 new OpenIdConnectConfigurationRetriever())

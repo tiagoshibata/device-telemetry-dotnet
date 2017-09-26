@@ -2,13 +2,14 @@
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Diagnostics;
+using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Runtime;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.Runtime;
 
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService
 {
-    /// <summary>Application entry point</summary>
-    public class Program
+    public static class Program
     {
+        // Application entry point
         public static void Main(string[] args)
         {
             IConfig config = new Config(new ConfigData(new Logger(Uptime.ProcessId, LogLevel.Info)));

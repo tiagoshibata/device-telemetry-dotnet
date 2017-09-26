@@ -12,8 +12,11 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
     {
         private enum Status
         {
+            // ReSharper disable once InconsistentNaming
             closed = 1,
+            // ReSharper disable once InconsistentNaming
             acknowledged = 2,
+            // ReSharper disable once InconsistentNaming
             open = 3
         }
 

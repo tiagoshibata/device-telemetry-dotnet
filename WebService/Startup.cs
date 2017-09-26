@@ -42,6 +42,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService
             // Add controllers as services so they'll be resolved.
             services.AddMvc().AddControllersAsServices();
 
+            // Prepare DI container
             this.ApplicationContainer = DependencyResolution.Setup(services);
 
             // Print some useful information at bootstrap time
@@ -62,6 +63,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService
         {
             loggerFactory.AddConsole(this.Configuration.GetSection("Logging"));
 
+            // Check for Authorization header before dispatching requests
             app.UseMiddleware<AuthMiddleware>();
 
             // Enable CORS - Must be before UseMvc
