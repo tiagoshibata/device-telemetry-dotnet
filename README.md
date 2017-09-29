@@ -184,8 +184,9 @@ Please enter issues, bugs, or suggestions as GitHub Issues here: https://github.
 [build-url]: https://travis-ci.org/Azure/device-telemetry-dotnet
 [issues-badge]: https://img.shields.io/github/issues/azure/device-telemetry-dotnet.svg
 [issues-url]: https://github.com/azure/device-telemetry-dotnet/issues
-[gitter-badge]: https://img.shields.io/gitter/room/azure/iot-pcs.js.svg
-[gitter-url]: https://gitter.im/azure/iot-pcs
+[gitter-badge]: https://img.shields.io/gitter/room/azure/iot-solutions.js.svg
+[gitter-url]: https://gitter.im/azure/iot-solutions
+
 [project-wiki]: https://github.com/Azure/device-telemetry-dotnet/wiki/%5BAPI-Specifications%5D-Messages
 [documentdb-url]: https://docs.microsoft.com/en-us/azure/cosmos-db/create-documentdb-dotnet
 [storageadapter-url]: https://github.com/Azure/pcs-storage-adapter-dotnet/blob/master/README.md
