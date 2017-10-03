@@ -7,6 +7,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
+using Microsoft.Azure.Documents.SystemFunctions;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Diagnostics;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Exceptions;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Runtime;
@@ -42,7 +43,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
         Tuple<bool, string> Ping();
     }
 
-    public class StorageClient : IStorageClient
+    public class StorageClient : IStorageClient, IDisposable
     {
         private readonly ILogger log;
         private Uri storageUri;
@@ -256,6 +257,14 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             {
                 this.log.Error("Error upserting document.", (() => new { colId, ex }));
                 throw;
+            }
+        }
+
+        public void Dispose()
+        {
+            if (!this.client.IsNull())
+            {
+                this.client.Dispose();
             }
         }
     }
