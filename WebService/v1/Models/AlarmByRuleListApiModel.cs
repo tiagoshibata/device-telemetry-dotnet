@@ -56,7 +56,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
                         AlarmByRuleApiModel alarmByRule;
                         if (dictionary.TryGetValue(id, out alarmByRule))
                         {
-                            alarmByRule.Count = alarmByRule.Count++;
+                            alarmByRule.Count++;
 
                             DateTimeOffset created = alarm.DateCreated;
 
