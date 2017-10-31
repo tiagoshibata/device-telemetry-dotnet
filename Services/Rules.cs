@@ -30,6 +30,14 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             int limit,
             string groupId);
 
+        Task<List<AlarmCountByRule>> GetAlarmCountForListAsync(
+            DateTimeOffset? from,
+            DateTimeOffset? to,
+            string order,
+            int skip,
+            int limit,
+            string[] devices);
+
         Task<Rule> CreateAsync(Rule rule);
 
         Task<Rule> UpdateAsync(Rule rule);
@@ -44,12 +52,16 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
         private readonly IStorageAdapterClient storage;
         private readonly ILogger log;
 
+        private readonly IAlarms alarms;
+
         public Rules(
             IStorageAdapterClient storage,
-            ILogger logger)
+            ILogger logger,
+            IAlarms alarms)
         {
             this.storage = storage;
             this.log = logger;
+            this.alarms = alarms;
         }
 
         public async Task CreateFromTemplateAsync(string template)
@@ -130,7 +142,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
                 }
             }
 
-            // sort based on DateCreated, default descending
+            // sort based on MessageTime, default descending
             ruleList.Sort();
 
             if (order.Equals("asc", StringComparison.OrdinalIgnoreCase))
@@ -152,6 +164,49 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             }
 
             return ruleList.GetRange(skip, limit);
+        }
+
+        public async Task<List<AlarmCountByRule>> GetAlarmCountForListAsync(
+            DateTimeOffset? from,
+            DateTimeOffset? to,
+            string order,
+            int skip,
+            int limit,
+            string[] devices)
+        {
+            var alarmCountByRuleList = new List<AlarmCountByRule>();
+
+            // get list of rules
+            var rulesList = await this.GetListAsync(order, skip, limit, null);
+
+            // get open alarm count and most recent alarm for each rule
+            foreach (var rule in rulesList)
+            {
+                var alarmCount = this.alarms.GetCountByRule(
+                    rule.Id,
+                    from,
+                    to,
+                    devices);
+
+                // skip to next rule if no alarms found
+                if (alarmCount == 0)
+                {
+                    continue;
+                }
+
+                // get most recent alarm for rule
+                var recentAlarm = this.GetLastAlarmForRule(rule.Id, from, to, devices);
+
+                // add alarmCountByRule to list
+                alarmCountByRuleList.Add(
+                    new AlarmCountByRule(
+                        alarmCount,
+                        recentAlarm.Status,
+                        recentAlarm.DateCreated,
+                        rule));
+            }
+
+            return alarmCountByRuleList;
         }
 
         public async Task<Rule> CreateAsync(Rule rule)
@@ -183,6 +238,33 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             updatedRule.Id = result.Key;
 
             return updatedRule;
+        }
+
+        private Alarm GetLastAlarmForRule(
+            string id,
+            DateTimeOffset? from,
+            DateTimeOffset? to,
+            string[] devices)
+        {
+            var resultList = this.alarms.ListByRule(
+                id,
+                from,
+                to,
+                "desc",
+                0,
+                1,
+                devices);
+
+            if (resultList.Count != 0)
+            {
+                return resultList[0];
+            }
+            else
+            {
+                this.log.Debug("Could not retrieve most recent alarm", () => new { id });
+                throw new ExternalDependencyException(
+                    "Could not retrieve most recent alarm");
+            }
         }
     }
 }

@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Diagnostics;
@@ -19,18 +20,21 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Controllers
         private const int DEVICE_LIMIT = 200;
 
         private readonly IAlarms alarmService;
+        private readonly IRules ruleService;
         private readonly ILogger log;
 
         public AlarmsByRuleController(
             IAlarms alarmService,
+            IRules ruleService,
             ILogger logger)
         {
             this.alarmService = alarmService;
+            this.ruleService = ruleService;
             this.log = logger;
         }
 
         [HttpGet]
-        public AlarmByRuleListApiModel List(
+        public async Task<AlarmByRuleListApiModel> ListAsync(
             [FromQuery] string from,
             [FromQuery] string to,
             [FromQuery] string order,
@@ -61,7 +65,8 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Controllers
                 throw new BadRequestException("The number of devices cannot exceed 200");
             }
 
-            List<Alarm> alarmsList = this.alarmService.List(
+            List<AlarmCountByRule> alarmsList 
+                = await this.ruleService.GetAlarmCountForListAsync(
                 fromDate,
                 toDate,
                 order,

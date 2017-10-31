@@ -43,9 +43,16 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
             this.Status = status;
             this.created = created;
             this.Rule = rule;
+
+            this.Metadata = new Dictionary<string, string>
+            {
+                { "$type", $"AlarmByRule;" + Version.NUMBER },
+                { "$uri", "/" + Version.PATH + "/alarmsbyrule/" + this.Rule.Id }
+            };
         }
 
-        [JsonProperty(PropertyName = "$metadata", Order = 1000)] public Dictionary<string, string> Metadata;
+        [JsonProperty(PropertyName = "$metadata", Order = 1000)]
+        public Dictionary<string, string> Metadata { get; set; }
 
         public AlarmByRuleApiModel(
             int count,

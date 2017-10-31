@@ -35,7 +35,13 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             int limit,
             string[] devices);
 
-        Task<Alarm> UpdateAsync(string id, string status);
+        int GetCountByRule(
+            string id,
+            DateTimeOffset? from,
+            DateTimeOffset? to,
+            string[] devices);
+
+            Task<Alarm> UpdateAsync(string id, string status);
     }
 
     public class Alarms : IAlarms
@@ -47,6 +53,18 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
 
         private readonly string databaseName;
         private readonly string collectionId;
+
+        // constants for storage keys
+        private const string MESSAGE_RECEIVED_KEY = "device.msg.received";
+        private const string RULE_ID_KEY = "rule.id";
+        private const string DEVICE_ID_KEY = "device.id";
+        private const string STATUS_KEY = "status";
+        private const string ALARM_SCHEMA_KEY = "alarm";
+
+        private const string ALARM_STATUS_OPEN = "open";
+        private const string ALARM_STATUS_ACKNOWLEDGED = "acknowledged";
+
+        private const int DOC_QUERY_LIMIT = 1000;
 
         public Alarms(
             IServicesConfig config,
@@ -78,15 +96,15 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             int limit,
             string[] devices)
         {
-            string sql = QueryBuilder.BuildSql(
-                "alarm",
+            string sql = QueryBuilder.GetDocumentsSql(
+                ALARM_SCHEMA_KEY,
                 null, null,
-                from, "created",
-                to, "created",
-                order, "created",
+                from, MESSAGE_RECEIVED_KEY,
+                to, MESSAGE_RECEIVED_KEY,
+                order, MESSAGE_RECEIVED_KEY,
                 skip,
                 limit,
-                devices, "device.id");
+                devices, DEVICE_ID_KEY);
 
             this.log.Debug("Created Alarm Query", () => new { sql });
 
@@ -121,15 +139,15 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             int limit,
             string[] devices)
         {
-            string sql = QueryBuilder.BuildSql(
-                "alarm",
-                id, "rule.id",
-                from, "created",
-                to, "created",
-                order, "created",
+            string sql = QueryBuilder.GetDocumentsSql(
+                ALARM_SCHEMA_KEY,
+                id, RULE_ID_KEY,
+                from, MESSAGE_RECEIVED_KEY,
+                to, MESSAGE_RECEIVED_KEY,
+                order, MESSAGE_RECEIVED_KEY,
                 skip,
                 limit,
-                devices, "device.id");
+                devices, DEVICE_ID_KEY);
 
             if (Regex.IsMatch(id, INVALID_CHARACTER))
             {
@@ -159,6 +177,36 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             return alarms;
         }
 
+        public int GetCountByRule(
+            string id,
+            DateTimeOffset? from,
+            DateTimeOffset? to,
+            string[] devices)
+        {
+            // build sql query to get open/acknowledged alarm count for rule
+            string[] statusList = { ALARM_STATUS_OPEN, ALARM_STATUS_ACKNOWLEDGED };
+            string sql = QueryBuilder.GetCountSql(
+                ALARM_SCHEMA_KEY,
+                id, RULE_ID_KEY,
+                from, MESSAGE_RECEIVED_KEY,
+                to, MESSAGE_RECEIVED_KEY,
+                devices, DEVICE_ID_KEY,
+                statusList, STATUS_KEY);
+
+            FeedOptions queryOptions = new FeedOptions();
+            queryOptions.EnableCrossPartitionQuery = true;
+            queryOptions.EnableScanInQuery = true;
+
+            // request count of alarms for a rule id with given parameters
+            var result = this.storageClient.QueryCount(
+                this.databaseName,
+                this.collectionId,
+                queryOptions,
+                sql);
+
+            return result;
+        }
+
         public async Task<Alarm> UpdateAsync(string id, string status)
         {
             if (Regex.IsMatch(id, INVALID_CHARACTER))
@@ -167,7 +215,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             }
 
             Document document = this.GetDocumentById(id);
-            document.SetPropertyValue("status", status);
+            document.SetPropertyValue(STATUS_KEY, status);
 
             document = await this.storageClient.UpsertDocumentAsync(
                 this.databaseName,
@@ -191,16 +239,14 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
                 null,
                 "SELECT * FROM c WHERE c.id='" + id + "'",
                 0,
-                1000);
+                DOC_QUERY_LIMIT);
 
             if (documentList.Count > 0)
             {
                 return documentList[0];
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
     }
 }

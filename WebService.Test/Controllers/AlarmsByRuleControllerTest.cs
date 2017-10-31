@@ -9,6 +9,8 @@ using Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Controllers;
 using Moq;
 using System;
 using System.Collections.Generic;
+using Castle.DynamicProxy.Contributors;
+using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.StorageAdapter;
 using WebService.Test.helpers;
 using Xunit;
 using Alarm = Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models.Alarm;
@@ -45,6 +47,7 @@ namespace WebService.Test.Controllers
             ConfigData configData = new ConfigData(new Logger(Uptime.ProcessId, LogLevel.Info));
             Config config = new Config(configData);
             IServicesConfig servicesConfig = config.ServicesConfig;
+            Mock<IStorageAdapterClient> storageAdapterClient = new Mock<IStorageAdapterClient>();
             this.log = new Mock<ILogger>();
 
             this.storage = new StorageClient(servicesConfig, this.log.Object);
@@ -62,18 +65,19 @@ namespace WebService.Test.Controllers
             }
 
             Alarms alarmService = new Alarms(servicesConfig, this.storage, this.log.Object);
-            this.controller = new AlarmsByRuleController(alarmService, this.log.Object);
+            Rules rulesService = new Rules(storageAdapterClient.Object, this.log.Object, alarmService);
+            this.controller = new AlarmsByRuleController(alarmService, rulesService, this.log.Object);
         }
 
         [Fact, Trait(Constants.TYPE, Constants.UNIT_TEST)]
         public void ProvideAlarmsByRuleResult()
         {
             // Act
-            var response = this.controller.List(null, null, "asc", null, null, null);
+            var response = this.controller.ListAsync(null, null, "asc", null, null, null);
 
             // Assert
-            Assert.NotEmpty(response.Metadata);
-            Assert.NotEmpty(response.Items);
+            Assert.NotEmpty(response.Result.Metadata);
+            Assert.NotEmpty(response.Result.Items);
         }
 
         private Document AlarmToDocument(Alarm alarm)

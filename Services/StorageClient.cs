@@ -11,6 +11,7 @@ using Microsoft.Azure.Documents.SystemFunctions;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Diagnostics;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Exceptions;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Runtime;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
 {
@@ -39,6 +40,12 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             string queryString,
             int skip,
             int limit);
+
+        int QueryCount(
+            string databaseName,
+            string colId,
+            FeedOptions queryOptions,
+            string queryString);
 
         Tuple<bool, string> Ping();
     }
@@ -238,6 +245,39 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             this.log.Info("Query results count:", () => new { docs.Count });
 
             return docs;
+        }
+
+        public int QueryCount(
+            string databaseName,
+            string colId,
+            FeedOptions queryOptions,
+            string queryString)
+        {
+            if (queryOptions == null)
+            {
+                queryOptions = new FeedOptions();
+                queryOptions.EnableCrossPartitionQuery = true;
+                queryOptions.EnableScanInQuery = true;
+            }
+
+            string collectionLink = string.Format(
+                "/dbs/{0}/colls/{1}",
+                databaseName,
+                colId);
+
+            var resultList = this.client.CreateDocumentQuery(
+                collectionLink,
+                queryString,
+                queryOptions).ToArray();
+
+            if (resultList.Length > 0)
+            {
+                return (int) resultList[0];
+            }
+
+            this.log.Info("No results found for count query", () => new { databaseName, colId, queryString });
+
+            return 0;
         }
 
         public async Task<Document> UpsertDocumentAsync(

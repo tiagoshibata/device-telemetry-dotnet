@@ -56,7 +56,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
         {
             int dataPrefixLen = DATA_PREFIX.Length;
 
-            string sql = QueryBuilder.BuildSql(
+            string sql = QueryBuilder.GetDocumentsSql(
                 "d2cmessage",
                 null, null,
                 from, "device.msg.received",
