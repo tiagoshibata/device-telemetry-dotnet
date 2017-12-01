@@ -37,7 +37,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             string databaseName,
             string colId,
             FeedOptions queryOptions,
-            string queryString,
+            SqlQuerySpec queryString,
             int skip,
             int limit);
 
@@ -212,7 +212,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             string databaseName,
             string colId,
             FeedOptions queryOptions,
-            string queryString,
+            SqlQuerySpec queryString,
             int skip,
             int limit)
         {
