@@ -27,42 +27,41 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Helpers
             string[] devices,
             string devicesProperty)
         {
-            var queryBuilder = new StringBuilder("SELECT TOP @top * FROM c WHERE (c[\"CollectionId\"] = @schemaName");
+            var queryBuilder = new StringBuilder("SELECT TOP @top * FROM c WHERE (c[\"doc.schema\"] = @schemaName");
 
             if (devices.Length > 0)
             {
-                var ids = string.Join("\",\"", devices);  /// @FIXME SQL injection
-                queryBuilder.Append(" AND c[@devicesProperty] IN (\"" + ids + "\")");
+                queryBuilder.Append(" AND c[@devicesProperty] IN @devices");
             }
 
             if (byId != null)
             {
-                queryBuilder.Append(" AND c[@byIdPropertyName] = \"" + byId + "\"");  /// @FIXME SQL injection
+                queryBuilder.Append(" AND c[@byIdPropertyName] = @byId");
             }
 
             if (from.HasValue)
             {
                 // TODO: left operand is never null
                 DateTimeOffset fromDate = from ?? default(DateTimeOffset);
-                queryBuilder.Append(" AND c[\"" + fromProperty + "\"] >= " + fromDate.ToUnixTimeMilliseconds());  /// @FIXME SQL injection
+                queryBuilder.Append(" AND c[@fromProperty] >= " + fromDate.ToUnixTimeMilliseconds());
             }
 
             if (to.HasValue)
             {
                 // TODO: left operand is never null
                 DateTimeOffset toDate = to ?? default(DateTimeOffset);
-                queryBuilder.Append(" AND c[\"" + toProperty + "\"] <= " + toDate.ToUnixTimeMilliseconds());  /// @FIXME SQL injection
+                queryBuilder.Append(" AND c[@toProperty] <= " + toDate.ToUnixTimeMilliseconds());
             }
 
             queryBuilder.Append(")");
 
             if (order == null || string.Equals(order, "desc", StringComparison.OrdinalIgnoreCase))
             {
-                queryBuilder.Append(" ORDER BY c[\"@orderProperty\"] DESC");
+                queryBuilder.Append(" ORDER BY c[@orderProperty] DESC");
             }
             else
             {
-                queryBuilder.Append(" ORDER BY c[\"@orderProperty\"] ASC");
+                queryBuilder.Append(" ORDER BY c[@orderProperty] ASC");
             }
 
             return new SqlQuerySpec(queryBuilder.ToString(),
@@ -70,7 +69,11 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Helpers
                     new SqlParameter { Name = "@top", Value = skip + limit },
                     new SqlParameter { Name = "@schemaName", Value = schemaName },
                     new SqlParameter { Name = "@devicesProperty", Value = devicesProperty },
+                    new SqlParameter { Name = "@devices", Value = devices },
                     new SqlParameter { Name = "@byIdPropertyName", Value = byIdPropertyName },
+                    new SqlParameter { Name = "@byId", Value = byId},
+                    new SqlParameter { Name = "@fromProperty", Value = fromProperty},
+                    new SqlParameter { Name = "@toProperty", Value = toProperty},
                     new SqlParameter { Name = "@orderProperty", Value = orderProperty },
                 }));
         }
@@ -88,18 +91,13 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Helpers
             string[] filterValues,
             string filterProperty) 
         {
-            var validateDeviceIds = string.Join(",", devices);  /// @FIXME SQL injection
-            var validateFilters = string.Join(",", filterValues);  /// @FIXME SQL injection
-
             // check for illegate characters in input
             ValidateInput(ref schemaName);
             ValidateInput(ref byId);
             ValidateInput(ref byIdProperty);
             ValidateInput(ref fromProperty);
             ValidateInput(ref toProperty);
-            ValidateInput(ref validateDeviceIds);
             ValidateInput(ref devicesProperty);
-            ValidateInput(ref validateFilters);
             ValidateInput(ref filterProperty);
 
             // build query
@@ -110,8 +108,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Helpers
 
             if (devices.Length > 0)
             {
-                string deviceIds = string.Join("\",\"", devices);
-                queryBuilder.Append(" AND c[@devicesProperty] IN (\"" + deviceIds + "\")");  /// @FIXME SQL injection
+                queryBuilder.Append(" AND c[@devicesProperty] IN @devices");
             }
 
             if (byId != null)
@@ -135,8 +132,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Helpers
 
             if (filterValues.Length > 0)
             {
-                string filter = string.Join("\",\"", filterValues);
-                queryBuilder.Append(" AND c[@filterProperty] IN (\"" + filter + "\")");
+                queryBuilder.Append(" AND c[@filterProperty] IN @filterValues");
             }
 
             queryBuilder.Append(")");
@@ -145,11 +141,13 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Helpers
                 new SqlParameterCollection(new SqlParameter[] {
                     new SqlParameter { Name = "@schemaName", Value = schemaName },
                     new SqlParameter { Name = "@devicesProperty", Value = devicesProperty },
+                    new SqlParameter { Name = "@devices", Value = devices},
                     new SqlParameter { Name = "@byIdProperty", Value = byIdProperty },
                     new SqlParameter { Name = "@byId", Value = byId },
                     new SqlParameter { Name = "@fromProperty", Value = fromProperty },
                     new SqlParameter { Name = "@toProperty", Value = toProperty },
                     new SqlParameter { Name = "@filterProperty", Value = filterProperty },
+                    new SqlParameter { Name = "@filterValues", Value = filterValues },
                 }));
         }
 

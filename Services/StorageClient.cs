@@ -37,7 +37,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             string databaseName,
             string colId,
             FeedOptions queryOptions,
-            SqlQuerySpec queryString,
+            SqlQuerySpec querySpec,
             int skip,
             int limit);
 
@@ -45,7 +45,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             string databaseName,
             string colId,
             FeedOptions queryOptions,
-            string queryString);
+            SqlQuerySpec querySpec);
 
         Tuple<bool, string> Ping();
     }
@@ -212,7 +212,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             string databaseName,
             string colId,
             FeedOptions queryOptions,
-            SqlQuerySpec queryString,
+            SqlQuerySpec querySpec,
             int skip,
             int limit)
         {
@@ -231,7 +231,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
 
             var queryResults = this.client.CreateDocumentQuery<Document>(
                     collectionLink,
-                    queryString,
+                    querySpec,
                     queryOptions)
                 .AsEnumerable()
                 .Skip(skip)
@@ -251,7 +251,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             string databaseName,
             string colId,
             FeedOptions queryOptions,
-            string queryString)
+            SqlQuerySpec querySpec)
         {
             if (queryOptions == null)
             {
@@ -267,7 +267,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
 
             var resultList = this.client.CreateDocumentQuery(
                 collectionLink,
-                queryString,
+                querySpec,
                 queryOptions).ToArray();
 
             if (resultList.Length > 0)
@@ -275,7 +275,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
                 return (int) resultList[0];
             }
 
-            this.log.Info("No results found for count query", () => new { databaseName, colId, queryString });
+            this.log.Info("No results found for count query", () => new { databaseName, colId, querySpec });
 
             return 0;
         }
