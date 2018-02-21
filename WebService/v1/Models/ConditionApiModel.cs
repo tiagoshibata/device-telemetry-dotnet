@@ -8,23 +8,15 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
     public class ConditionApiModel
     {
         [JsonProperty(PropertyName = "Field")]
-        public string Field { get; set; }
+        public string Field { get; set; } = string.Empty;
 
         [JsonProperty(PropertyName = "Operator")]
-        public string Operator { get; set; }
+        public string Operator { get; set; } = string.Empty;
 
         [JsonProperty(PropertyName = "Value")]
-        public string Value { get; set; }
+        public string Value { get; set; } = string.Empty;
 
-        public ConditionApiModel(
-            string field,
-            string @operator,
-            string value)
-        {
-            this.Field = field;
-            this.Operator = @operator;
-            this.Value = value;
-        }
+        public ConditionApiModel() { }
 
         public ConditionApiModel(Condition condition)
         {
@@ -38,10 +30,12 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
 
         public Condition ToServiceModel()
         {
-            return new Condition(
-                this.Field,
-                this.Operator,
-                this.Value);
+            return new Condition()
+            {
+                Field = this.Field,
+                Operator = this.Operator,
+                Value = this.Value
+            };
         }
     }
 }
