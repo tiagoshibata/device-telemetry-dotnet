@@ -40,7 +40,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
 
         Task<Rule> CreateAsync(Rule rule);
 
-        Task<Rule> UpdateAsync(Rule rule);
+        Task<Rule> UpsertAsync(Rule rule);
     }
 
     public class Rules : IRules
@@ -76,7 +76,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
 
                 foreach (var item in file["Rules"])
                 {
-                    Rule newRule = new Rule(item);
+                    Rule newRule = this.Deserialize(item.ToString());
 
                     await this.CreateAsync(newRule);
                 }
@@ -103,7 +103,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             }
 
             var item = await this.storage.GetAsync(STORAGE_COLLECTION, id);
-            var rule = JsonConvert.DeserializeObject<Rule>(item.Data);
+            var rule = this.Deserialize(item.Data);
 
             rule.ETag = item.ETag;
             rule.Id = item.Key;
@@ -123,7 +123,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             {
                 try
                 {
-                    var rule = JsonConvert.DeserializeObject<Rule>(item.Data);
+                    var rule = this.Deserialize(item.Data);
                     rule.ETag = item.ETag;
                     rule.Id = item.Key;
 
@@ -211,20 +211,52 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
 
         public async Task<Rule> CreateAsync(Rule rule)
         {
+            if (rule == null)
+            {
+                throw new InvalidInputException("Rule not provided.");
+            }
+
+            // Ensure dates are correct
+            rule.DateCreated = DateTimeOffset.UtcNow.ToString(DATE_FORMAT);
+            rule.DateModified = rule.DateCreated;
+
             var item = JsonConvert.SerializeObject(rule);
             var result = await this.storage.CreateAsync(STORAGE_COLLECTION, item);
 
-            Rule newRule = new Rule(JToken.Parse(result.Data));
+            Rule newRule = this.Deserialize(result.Data);
             newRule.ETag = result.ETag;
             newRule.Id = result.Key;
 
             return newRule;
         }
 
-        public async Task<Rule> UpdateAsync(Rule rule)
+        public async Task<Rule> UpsertAsync(Rule rule)
         {
+            if (rule == null)
+            {
+                throw new InvalidInputException("Rule not provided.");
+            }
+
+            // Ensure dates are correct
+            // Get the existing rule so we keep the created date correct
+            Rule savedRule = null; ;
+            try
+            {
+                savedRule = await GetAsync(rule.Id);
+            }
+            catch (Exception e)
+            {
+                if (e == null || savedRule == null)
+                {
+                    // Following the patter of Post should create or update
+                    this.log.Info("Creating a new rule for Id:", () => new { rule.Id });
+                    return await CreateAsync(rule);
+                }
+            }
+            rule.DateCreated = savedRule.DateCreated;
             rule.DateModified = DateTimeOffset.UtcNow.ToString(DATE_FORMAT);
 
+            // Save the updated rule
             var item = JsonConvert.SerializeObject(rule);
             var result = await this.storage.UpdateAsync(
                 STORAGE_COLLECTION,
@@ -232,7 +264,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
                 item,
                 rule.ETag);
 
-            Rule updatedRule = new Rule(JToken.Parse(result.Data));
+            Rule updatedRule = this.Deserialize(result.Data);
 
             updatedRule.ETag = result.ETag;
             updatedRule.Id = result.Key;
@@ -264,6 +296,18 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
                 this.log.Debug("Could not retrieve most recent alarm", () => new { id });
                 throw new ExternalDependencyException(
                     "Could not retrieve most recent alarm");
+            }
+        }
+
+        private Rule Deserialize(string jsonRule)
+        {
+            try
+            {
+               return JsonConvert.DeserializeObject<Rule>(jsonRule);
+            }
+            catch (Exception e)
+            {
+                throw new ExternalDependencyException("Unable to parse data.", e);
             }
         }
     }

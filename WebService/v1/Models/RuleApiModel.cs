@@ -1,75 +1,55 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
+using System;
 using System.Collections.Generic;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
 {
     public class RuleApiModel
     {
+        private const string DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:sszzz";
+
         [JsonProperty(PropertyName = "ETag")]
-        public string ETag { get; set; }
+        public string ETag { get; set; } = string.Empty;
 
         [JsonProperty(PropertyName = "Id")]
-        public string Id { get; set; }
+        public string Id { get; set; } = string.Empty;
 
         [JsonProperty(PropertyName = "Name")]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         [JsonProperty(PropertyName = "DateCreated")]
-        public string DateCreated { get; set; }
+        public string DateCreated { get; set; } = DateTimeOffset.UtcNow.ToString(DATE_FORMAT);
 
         [JsonProperty(PropertyName = "DateModified")]
-        public string DateModified { get; set; }
+        public string DateModified { get; set; } = DateTimeOffset.UtcNow.ToString(DATE_FORMAT);
 
         [JsonProperty(PropertyName = "Enabled")]
-        public bool Enabled { get; set; }
+        public bool Enabled { get; set; } = false;
 
         [JsonProperty(PropertyName = "Description")]
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
 
         [JsonProperty(PropertyName = "GroupId")]
-        public string GroupId { get; set; }
+        public string GroupId { get; set; } = string.Empty;
 
         [JsonProperty(PropertyName = "Severity")]
-        public string Severity { get; set; }
+        public string Severity { get; set; } = string.Empty;
 
         [JsonProperty(PropertyName = "Conditions")]
-        public List<ConditionApiModel> Conditions { get; set; }
+        public List<ConditionApiModel> Conditions { get; set; } = new List<ConditionApiModel>();
 
         [JsonProperty(PropertyName = "$metadata", Order = 1000)]
-        public IDictionary<string, string> Metadata { get; set; }
-
-        public RuleApiModel(
-            string eTag,
-            string id,
-            string name,
-            string dateCreated,
-            string dateModified,
-            bool enabled,
-            string description,
-            string groupId,
-            string severity,
-            List<ConditionApiModel> conditions)
+        public IDictionary<string, string> Metadata => new Dictionary<string, string>
         {
-            this.ETag = eTag;
-            this.Id = id;
-            this.Name = name;
-            this.DateCreated = dateCreated;
-            this.DateModified = dateModified;
-            this.Enabled = enabled;
-            this.Description = description;
-            this.GroupId = groupId;
-            this.Severity = severity;
-            this.Conditions = conditions;
+            { "$type", "Rule;" + Version.NUMBER },
+            { "$uri", "/" + Version.PATH + "/rules/" + this.Id }
+        };
 
-            this.Metadata = new Dictionary<string, string>
-            {
-                { "$type", $"Rule;" + Version.NUMBER },
-                { "$uri", "/" + Version.PATH + "/rules/" + this.Id }
-            };
-        }
+        public RuleApiModel() { }
 
         public RuleApiModel(Rule rule)
         {
@@ -85,42 +65,34 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
                 this.GroupId = rule.GroupId;
                 this.Severity = rule.Severity;
 
-                this.Conditions = new List<ConditionApiModel>();
                 foreach (Condition condition in rule.Conditions)
                 {
                     this.Conditions.Add(new ConditionApiModel(condition));
                 }
-
-                this.Metadata = new Dictionary<string, string>
-                {
-                    { "$type", $"Rule;" + Version.NUMBER },
-                    { "$uri", "/" + Version.PATH + "/rules/" + this.Id }
-                };
             }
         }
 
-        public Rule ToRuleModel()
+        public Rule ToServiceModel()
         {
             List<Condition> conditions = new List<Condition>();
             foreach (ConditionApiModel condition in this.Conditions)
             {
-                conditions.Add(new Condition(
-                    condition.Field,
-                    condition.Operator,
-                    condition.Value));
+                conditions.Add(condition.ToServiceModel());
             }
 
-            return new Rule(
-                this.ETag,
-                this.Id,
-                this.Name,
-                this.DateCreated,
-                this.DateModified,
-                this.Enabled,
-                this.Description,
-                this.GroupId,
-                this.Severity,
-                conditions);
+            return new Rule()
+            {
+                ETag = this.ETag,
+                Id = this.Id,
+                Name = this.Name,
+                DateCreated = this.DateCreated,
+                DateModified = this.DateModified,
+                Enabled = this.Enabled,
+                Description = this.Description,
+                GroupId = this.GroupId,
+                Severity = this.Severity,
+                Conditions = conditions
+            };
         }
     }
 }

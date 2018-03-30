@@ -64,25 +64,34 @@ namespace Services.Test
         {
             var sampleConditions = new List<Condition>
             {
-                new Condition("sample_conddition","Equals","1")
+                new Condition()
+                {
+                    Field = "sample_conddition",
+                    Operator = "Equals",
+                    Value = "1"
+                }
             };
 
             var sampleRules = new List<Rule>
             {
-                new Rule(
-                    "Sample 1",
-                    true,
-                    "Sample description 1",
-                    "Prototyping devices",
-                    "critical",
-                    sampleConditions),
-                new Rule(
-                    "Sample 2",
-                    true,
-                    "Sample description 2",
-                    "Prototyping devices",
-                    "warning",
-                    sampleConditions)
+                new Rule()
+                {
+                    Name = "Sample 1",
+                    Enabled = true,
+                    Description = "Sample description 1",
+                    GroupId = "Prototyping devices",
+                    Severity = "critical",
+                    Conditions = sampleConditions
+                },
+                new Rule()
+                {
+                    Name = "Sample 2",
+                    Enabled = true,
+                    Description = "Sample description 2",
+                    GroupId =  "Prototyping devices",
+                    Severity =  "warning",
+                    Conditions =  sampleConditions
+                }
             };
 
             this.rules.Setup(x => x.GetListAsync(null, 0, 1000, null))
